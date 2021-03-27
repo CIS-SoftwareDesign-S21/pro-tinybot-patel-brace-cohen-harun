@@ -17,6 +17,8 @@ async def on_message(message):
         await message.channel.send('Hello!')
     elif message.content.startswith( 'i am' ):
         await message.channel.send( 'Hello, ' + message.content.split( ' ' )[2] )
+    elif message.content.startswith( '$bye' ):
+        await message.channel.send('Bye!')
 
 
 client.run('ODIzOTIyODMwOTI4Mzc5OTI0.YFn37g.qBiNOnlxbAgc7n4jfu9GQi2dkQk')
