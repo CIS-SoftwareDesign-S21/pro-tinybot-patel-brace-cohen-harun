@@ -20,7 +20,9 @@ Ted, aged 18, is a Senior in high school. Ted is an average student who does not
 # Feature List
 **Server Leaderboard** - Tracks competitive user records for every TinyBot minigame. Statistics tracked will include Wins/Losses, Win %, and Elo rating for the game  
 **Tic Tac Toe** - A rendition the classic game played in Discord chat.  
-**Micro-chess** - A simplified chess game on 4x5 board.  
+**Micro-chess** - A simplified chess game on 4x5 board.
+**Coin Flip** - A simple game of heads or tails.
+**Battleship** - A strategy type guessing game for two players.
 
 # How to Install
 Download files and run command "python3 main.py"  
