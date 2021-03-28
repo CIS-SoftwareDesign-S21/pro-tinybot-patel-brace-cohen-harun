@@ -13,15 +13,16 @@ https://trello.com/b/XEBCcyK0/discord-bot-board
 
 The TinyBot is a Discord bot for both gamers and casual users that introduces PVP minigames such as Tic-Tac-Toe and Chess alongside a leaderboard system that records users' game history. Unlike online websites or moblie apps that require the user to exchange personal information or add extra steps to invite people to play the game, our product allows the user to play with anyone on the server, providing an ease of access and usability.  
 
-# Ted, a high school student
-Ted, aged 18, is a Senior in high school. Ted is an average student who does not take any honors or AP classes and has average grades. One of his hobbies is to play video games on his PC after school. He and his friends use Discord to communicate while playing games. After a long session of games, he, and his friends cooldown by playing tic-tac-toe on TinyBot. When they cannot decide what game to play, they use the coin flip minigame to decide. Ted also plays minigames on TinyBot when he has to wait for one of his friends to join the game. 
+# Personas
+### Ted, a high school student
+Ted, aged 18, is a Senior in high school. Ted is an average student who does not take any honors or AP classes and has average grades. One of his hobbies is to play video games on his PC after school. He likes to play games such as Rocket Leauge, Valorant, and Warzone. He and his friends use Discord to communicate while playing games. A single round of a game can take 10 minutes to an hour and after a long session, he and his friends could cooldown by playing a game of tic-tac-toe or battleship before queueing up again. Often they cannot decide on what game to play, so instead of arguging with each other on what game to play they could use the coin flip minigame to make their decision. Ted often finds himself waiting for his friend to get on the game or go do a chore so while he is waiting Ted could play a quick minigames on Discord against other people in the server. 
 
 
 # Feature List
 **Server Leaderboard** - Tracks competitive user records for every TinyBot minigame. Statistics tracked will include Wins/Losses, Win %, and Elo rating for the game  
 **Tic Tac Toe** - A rendition the classic game played in Discord chat.  
-**Micro-chess** - A simplified chess game on 4x5 board.
-**Coin Flip** - A simple game of heads or tails.
+**Micro-chess** - A simplified chess game on 4x5 board. </br>
+**Coin Flip** - A simple game of heads or tails. </br>
 **Battleship** - A strategy type guessing game for two players.
 
 # How to Install
