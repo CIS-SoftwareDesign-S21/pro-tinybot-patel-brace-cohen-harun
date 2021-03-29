@@ -28,6 +28,11 @@ Bob, is a 25 year-old student in University. He is a senior majoring in Computer
 Since most of the gamers use discord, he created a discord channel for his game club. The purpose was to communicate and get in touch with other members. He wanted to make the club active without in-person / face to face meetings.
 He wants to use Tiny Bot to make more activities for his club discord channel. It may encourage the members to talk, play games, and participate in the channel during pandemic.
 
+### Mitchell, a Professional Gamer
+Mitchell, is a 23 year-old professional gamer, specifically playing a game DOTA 2. Mitchell grew up with a love for video games and spent many nights playing until the early morning with his brother. Mitchell always strived for perfection in any
+game that he played, which caused a considerable amount of stress at times due to constantly practicing and feelings of slow progression. This has made it where at times Mitchell just wants to play some more simplistic minigames with his friends over discord.
+The quarantine has made meeting up in person quite hard so this seemed to be the next best thing. A bot that allowed him to relax with his friends while still having a little bit of fun playing games that don't require a large amount of brain power.
+
 # Feature List
 **Server Leaderboard** - Tracks competitive user records for every TinyBot minigame. Statistics tracked will include Wins/Losses, Win %, and Elo rating for the game  
 **Tic Tac Toe** - A rendition the classic game played in Discord chat.  
