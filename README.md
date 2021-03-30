@@ -12,6 +12,8 @@ TinyBot is a discord bot that can be used by the users to play mini-games with e
 There are multiple games that users can choose from. 
 The bot has a database that stores the scoring records & game history to see how many games the user has won against other users.
 
+Link: https://github.com/CIS-SoftwareDesign-S21/projects-feedback-section-01-letarte-mw-11am/issues/5
+
 # Vision
 
 The TinyBot is a Discord bot for both gamers and casual users that introduces PVP minigames such as Tic-Tac-Toe and Chess alongside a leaderboard system that records users' game history. Unlike online websites or moblie apps that require the user to exchange personal information or add extra steps to invite people to play the game, our product allows the user to play with anyone on the server, providing an ease of access and usability.  
