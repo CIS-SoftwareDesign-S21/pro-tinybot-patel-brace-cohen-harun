@@ -12,7 +12,7 @@ TinyBot is a discord bot that can be used by the users to play mini-games with e
 There are multiple games that users can choose from. 
 The bot has a database that stores the scoring records & game history to see how many games the user has won against other users.
 
-Link: https://github.com/CIS-SoftwareDesign-S21/projects-feedback-section-01-letarte-mw-11am/issues/5
+Link: https://github.com/CIS-SoftwareDesign-S21/pro-tinybot-patel-brace-cohen-harun/blob/pregame/Patel_TinyBot.md
 
 # Vision
 
