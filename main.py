@@ -1,5 +1,6 @@
 import discord
 import os
+from coinflip import coinflip
 
 client = discord.Client()
 
@@ -19,6 +20,8 @@ async def on_message(message):
         await message.channel.send( 'Hello, ' + message.content.split( ' ' )[2] )
     elif message.content.startswith( '$bye' ):
         await message.channel.send('Bye!')
+    elif message.content.startswith( '$coin' ):
+        await message.channel.send( coinflip() )
 
 
 client.run('ODIzOTIyODMwOTI4Mzc5OTI0.YFn37g.qBiNOnlxbAgc7n4jfu9GQi2dkQk')
