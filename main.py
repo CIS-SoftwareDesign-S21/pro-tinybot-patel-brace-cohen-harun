@@ -21,7 +21,14 @@ async def on_message(message):
     elif message.content.startswith( '$bye' ):
         await message.channel.send('Bye!')
     elif message.content.startswith( '$coin' ):
-        await message.channel.send( coinflip() )
+        embed = discord.Embed()
+        result = coinflip()
+        embed.title = result
+        if(result == "HEADS"):
+            embed.set_image(url="https://bjc.edc.org/June2017/bjc-r/img/5-algorithms/img_flipping-a-coin/Heads.png")
+        else:
+            embed.set_image(url="https://bjc.edc.org/June2017/bjc-r/img/5-algorithms/img_flipping-a-coin/Tails.png")
+        await message.channel.send(embed = embed)
 
 
 client.run('ODIzOTIyODMwOTI4Mzc5OTI0.YFn37g.qBiNOnlxbAgc7n4jfu9GQi2dkQk')
