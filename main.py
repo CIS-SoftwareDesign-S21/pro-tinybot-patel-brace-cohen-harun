@@ -29,6 +29,8 @@ async def on_message(message):
         else:
             embed.set_image(url="https://bjc.edc.org/June2017/bjc-r/img/5-algorithms/img_flipping-a-coin/Tails.png")
         await message.channel.send(embed = embed)
+    elif message.content.startswith( '$how are you' ):
+        await message.channel.send('I am good! Thank you for asking')
 
 
 client.run('ODIzOTIyODMwOTI4Mzc5OTI0.YFn37g.qBiNOnlxbAgc7n4jfu9GQi2dkQk')
