@@ -1,8 +1,8 @@
 from typing import Any
-
 import discord
 import os
 from tic_tac_toe import TicTacToeGame
+from coinflip import coinflip
 
 game: TicTacToeGame = TicTacToeGame()
 client = discord.Client()
@@ -32,7 +32,17 @@ async def on_message(message):
         await message.channel.send( 'Tic-Tac-Toe game started!' )
     elif message.content.startswith('^'):
         await message.channel.send( game.makeMove( message.content[1:] ) )
-
+    elif message.content.startswith( '$coin' ):
+        embed = discord.Embed()
+        result = coinflip()
+        embed.title = result
+        if(result == "HEADS"):
+            embed.set_image(url="https://bjc.edc.org/June2017/bjc-r/img/5-algorithms/img_flipping-a-coin/Heads.png")
+        else:
+            embed.set_image(url="https://bjc.edc.org/June2017/bjc-r/img/5-algorithms/img_flipping-a-coin/Tails.png")
+        await message.channel.send(embed = embed)
+    elif message.content.startswith( '$how are you' ):
+        await message.channel.send('I am good! Thank you for asking')
 
 
 client.run('ODIzOTIyODMwOTI4Mzc5OTI0.YFn37g.qBiNOnlxbAgc7n4jfu9GQi2dkQk')
