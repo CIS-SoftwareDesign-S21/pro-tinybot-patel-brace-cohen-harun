@@ -1,8 +1,12 @@
+from typing import Any
 import discord
 import os
+from tic_tac_toe import TicTacToeGame
 from coinflip import coinflip
 
+game: TicTacToeGame = TicTacToeGame()
 client = discord.Client()
+
 
 @client.event
 async def on_ready():
@@ -20,6 +24,14 @@ async def on_message(message):
         await message.channel.send( 'Hello, ' + message.content.split( ' ' )[2] )
     elif message.content.startswith( '$bye' ):
         await message.channel.send('Bye!')
+        await client.logout()
+        await client.close()
+    elif message.content.startswith( 'ttt' ):
+        global game #holy fuck python just be normal
+        game = TicTacToeGame()
+        await message.channel.send( 'Tic-Tac-Toe game started!' )
+    elif message.content.startswith('^'):
+        await message.channel.send( game.makeMove( message.content[1:] ) )
     elif message.content.startswith( '$coin' ):
         embed = discord.Embed()
         result = coinflip()
