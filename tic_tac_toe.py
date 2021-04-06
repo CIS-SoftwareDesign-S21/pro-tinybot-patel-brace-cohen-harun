@@ -3,6 +3,10 @@ import os
 
 class TicTacToeGame:
 
+    def __init__(self, user, opponent):
+        self.user = user
+        self.opponent = opponent
+
     board = [
         [ ' - ', ' - ', ' - ' ],
         [ ' - ', ' - ', ' - ' ],
@@ -12,6 +16,7 @@ class TicTacToeGame:
     rowIDs = [ 'A', 'B', 'C' ]
     turn: str = 'O'
     squaresFilled = 0
+
 
     #check each turn if someone won and end game if so
     def checkForVictory(self) -> str:
@@ -28,7 +33,7 @@ class TicTacToeGame:
             return ''.join('%s wins!' % self.turn)
 
 
-    def makeMove(self, move ) -> str:
+    def makeMove(self, move) -> str:
 
         try: #accept move from player; ask again if input is not correct
             if self.board[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' - ':
