@@ -86,7 +86,7 @@ class BattleShipGame:
         try: #accept move from player; ask again if input is not correct
             #apossibilities, repeat spot, hit ship, hit nothing
             if(self.comBoardToShowUser[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' m ' or self.comBoardToShowUser[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' x ' ):#first check if it is a repeat spot
-                return '\nYou already tried to hit this space\n'
+                output+= '\nYou picked a repeat space\n'
             elif self.comBoard[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' - ':#you hit an empty spot
                 self.comBoardToShowUser[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] = ' m '#show the user that they hit an empty spot
                 output += "\nYou missed\n"
@@ -105,21 +105,45 @@ class BattleShipGame:
 
 
 
-        #create text representation of the board
+
+
+        # TODO: AFTER YOU MAKE YOUR MOVE, THE COMPUTER MAKES A MOVE
+        #pick a random row and col and that is the move
+        comprow = random.randint(0, 4)
+        compcol = random.randint(0, 4)
+        output += "\nThe computer picked spot " + self.rowIDs[comprow] + str(compcol+1)+ "\n"
+
+        if (self.userBoard[comprow][compcol] == ' m ' or self.userBoard[comprow][compcol] == ' x '):  # first check if it is a repeat spot
+            output+= '\nThe computer picked a repeat space\n'
+        elif self.userBoard[comprow][compcol] == ' - ':  # computer hit an empty spot
+            self.userBoard[comprow][compcol] = ' m '  # show the computer that they hit an empty spot
+            output += "\nThe computer missed\n"
+            # self.comBoard[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] = self.turn
+        elif (self.userBoard[comprow][compcol] == ' o '):  # computer hit a part of a ship
+            self.userBoard[comprow][compcol] = ' x '  # show the user that computer hit a ship
+            output += "\nThe computer hit your ship\n"
+        else:
+            return '\nI did not account for this option in the code.\n'
+
+
+
+        # create text representation of the board
         output += "\nWhat you know about the opponent's board: \n"
-        for i in range(0,5):
-            output += ('%s %s %s %s %s\n' % (self.comBoardToShowUser[i][0],self.comBoardToShowUser[i][1], self.comBoardToShowUser[i][2], self.comBoardToShowUser[i][3], self.comBoardToShowUser[i][4] ))
+        for i in range(0, 5):
+            output += ('%s %s %s %s %s\n' % (
+            self.comBoardToShowUser[i][0], self.comBoardToShowUser[i][1], self.comBoardToShowUser[i][2],
+            self.comBoardToShowUser[i][3], self.comBoardToShowUser[i][4]))
 
         output += "\nYour board: \n"
         for i in range(0, 5):
-            output += ('%s %s %s %s %s\n' % (self.userBoard[i][0], self.userBoard[i][1], self.userBoard[i][2],self.userBoard[i][3], self.userBoard[i][4]))
+            output += ('%s %s %s %s %s\n' % (
+            self.userBoard[i][0], self.userBoard[i][1], self.userBoard[i][2], self.userBoard[i][3],
+            self.userBoard[i][4]))
 
         output += "\nThe computer's real board: \n"
         for i in range(0, 5):
             output += ('%s %s %s %s %s\n' % (
-            self.comBoard[i][0], self.comBoard[i][1], self.comBoard[i][2],
-            self.comBoard[i][3], self.comBoard[i][4]))
-
-        # TODO: AFTER YOU MAKE YOUR MOVE, THE COMPUTER MAKES A MOVE
+                self.comBoard[i][0], self.comBoard[i][1], self.comBoard[i][2],
+                self.comBoard[i][3], self.comBoard[i][4]))
 
         return output
