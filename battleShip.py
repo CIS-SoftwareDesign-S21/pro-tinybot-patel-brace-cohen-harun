@@ -81,18 +81,30 @@ class BattleShipGame:
     putShip(userBoard, 2)  # put in length 2 ship
 
     def makeMove(self, move) -> str:
-
-        #try: #accept move from player; ask again if input is not correct
-            #if self.comBoard[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' - ':
-                #self.comBoard[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] = self.turn
-            #else:
-                #return 'This square has already been taken.'
-
-        #except (IndexError, ValueError):
-            #return 'Please input special key \'#\', followed by letter A,B,C,D or E to select row, and integer 1-5 to select column.'
-
-
         output: str = '\n'
+
+        try: #accept move from player; ask again if input is not correct
+            #apossibilities, repeat spot, hit ship, hit nothing
+            if(self.comBoardToShowUser[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' m ' or self.comBoardToShowUser[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' x ' ):#first check if it is a repeat spot
+                return '\nYou already tried to hit this space\n'
+            elif self.comBoard[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' - ':#you hit an empty spot
+                self.comBoardToShowUser[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] = ' m '#show the user that they hit an empty spot
+                output += "\nYou missed\n"
+                #self.comBoard[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] = self.turn
+            elif(self.comBoard[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' o '):#they hit a part of a ship
+                self.comBoardToShowUser[self.rowIDs.index(move[0].upper())][
+                    int(move[1]) - 1] = ' x '  # show the user that they hit a ship
+                output += "\nYou hit their ship\n"
+            else:
+                return '\nI did not account for this option in the code.\n'
+
+        except (IndexError, ValueError):
+            return 'Please input special key \'#\', followed by letter A,B,C,D or E to select row, and integer 1-5 to select column.'
+
+
+
+
+
         #create text representation of the board
         output += "\nWhat you know about the opponent's board: \n"
         for i in range(0,5):
@@ -107,5 +119,7 @@ class BattleShipGame:
             output += ('%s %s %s %s %s\n' % (
             self.comBoard[i][0], self.comBoard[i][1], self.comBoard[i][2],
             self.comBoard[i][3], self.comBoard[i][4]))
+
+        # TODO: AFTER YOU MAKE YOUR MOVE, THE COMPUTER MAKES A MOVE
 
         return output
