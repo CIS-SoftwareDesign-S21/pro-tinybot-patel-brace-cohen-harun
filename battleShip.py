@@ -32,7 +32,7 @@ class BattleShipGame:
 
 
 
-    def putShip( board, sizeOfShip):
+    def putShip( board, sizeOfShip): #put a ship on a board
 
 
         orientation = 0
@@ -80,11 +80,41 @@ class BattleShipGame:
     putShip(userBoard, 3)  # put in length 3 ship
     putShip(userBoard, 2)  # put in length 2 ship
 
+    # check each turn if someone won and end game if so
+    def checkVictoryStatus(self) -> str:
+
+        #check the user board to see if the comp won
+        #loop through board, if there are no o then comp won
+        compWon = 1
+        for r in range(0,4):
+            for c in range(0,4):
+                if(self.userBoard[r][c] == ' o '):
+                    compWon=0
+
+        #check the comp board to see if the user won
+        #check if there are 9 x because thats how many ship spaces there are
+        userWon =1
+        numx=0
+        for r in range(0,5):
+            for c in range(0,5):
+                if(self.comBoardToShowUser[r][c] == ' x '):
+                    numx += 1
+
+        if numx < 9:
+            userWon =0
+
+        if(compWon ==1):#if the computer won
+            return "The computer won!"
+        elif(userWon == 1):
+            return "You won!"
+        else: #if neither has won yet
+            return "no"
+
     def makeMove(self, move) -> str:
         output: str = '\n'
 
         try: #accept move from player; ask again if input is not correct
-            #apossibilities, repeat spot, hit ship, hit nothing
+            #possibilities, repeat spot, hit ship, hit nothing
             if(self.comBoardToShowUser[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' m ' or self.comBoardToShowUser[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' x ' ):#first check if it is a repeat spot
                 output+= '\nYou picked a repeat space\n'
             elif self.comBoard[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' - ':#you hit an empty spot
@@ -107,7 +137,7 @@ class BattleShipGame:
 
 
 
-        # TODO: AFTER YOU MAKE YOUR MOVE, THE COMPUTER MAKES A MOVE
+        # AFTER YOU MAKE YOUR MOVE, THE COMPUTER MAKES A MOVE
         #pick a random row and col and that is the move
         comprow = random.randint(0, 4)
         compcol = random.randint(0, 4)
@@ -145,5 +175,12 @@ class BattleShipGame:
             output += ('%s %s %s %s %s\n' % (
                 self.comBoard[i][0], self.comBoard[i][1], self.comBoard[i][2],
                 self.comBoard[i][3], self.comBoard[i][4]))
+
+        #check for victory
+        victoryStatus = "no"
+        victoryStatus = self.checkVictoryStatus();
+        if(victoryStatus != "no"):#if someone has won
+            output+= "\n" + str(victoryStatus) + "\n"
+            return output
 
         return output
