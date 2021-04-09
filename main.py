@@ -29,7 +29,9 @@ async def on_message(message):
     elif message.content.startswith( 'ttt' ):
         global game #holy fuck python just be normal
         game = TicTacToeGame()
-        await message.channel.send( 'Tic-Tac-Toe game started!' )
+        await message.channel.send( 'Tic-Tac-Toe game started!\nEnter ^\'Location\' to Move')
+        await message.channel.send('Example: ^A1')
+        await message.channel.send(game.initBoard())
     elif message.content.startswith('^'):
         await message.channel.send( game.makeMove( message.content[1:] ) )
     elif message.content.startswith( '$coin' ):

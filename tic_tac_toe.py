@@ -31,20 +31,17 @@ class TicTacToeGame:
     def makeMove(self, move ) -> str:
 
         try: #accept move from player; ask again if input is not correct
-            if self.board[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == '⬜':
-                self.board[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] = self.turn
+            # if self.board[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == '⬜':
+            #     self.board[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] = self.turn
+            if self.board[ int( move[1] ) - 1][ self.rowIDs.index( move[0].upper() ) ] == '⬜':
+                self.board[ int( move[1] ) - 1][ self.rowIDs.index( move[0].upper() ) ] = self.turn
             else:
                 return 'This square has already been taken.'
 
         except (IndexError, ValueError):
             return 'Please input special key \'^\', followed by letter A,B, or C to select row, and integer 1-3 to select column.'
 
-        output: str = '\n'
-        #create text representation of board
-        for i in range(0, 3):
-            output += ( '%s  %s  %s' % (self.board[i][0], self.board[i][1], self.board[i][2]) )
-            if i < 2:
-                output += '\n'
+        output = self.initBoard()
 
         #check if tie
         self.squaresFilled += 1
@@ -62,3 +59,21 @@ class TicTacToeGame:
             return output
 
         return output + '\n\n' + victoryStatus
+
+    def initBoard(self):
+        output: str = '\n'
+        # create text representation of board
+        output += ("%s" % "__| ")
+        output += ("%s" % "A")
+        output += ('%6s' % 'B')
+        output += ('%7s' % 'C')
+        output += '\n'
+        for i in range(0, 3):
+            if(i == 0):
+                output += '%d    ' % (i + 1)
+            else:
+                output += '%d   ' % (i + 1)
+            output += ('%s  %s  %s' % (self.board[i][0], self.board[i][1], self.board[i][2]))
+            if i < 2:
+                output += '\n'
+        return output
