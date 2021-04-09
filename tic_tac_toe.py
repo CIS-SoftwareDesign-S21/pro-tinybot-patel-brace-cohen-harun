@@ -4,13 +4,13 @@ import os
 class TicTacToeGame:
 
     board = [
-        [ ' - ', ' - ', ' - ' ],
-        [ ' - ', ' - ', ' - ' ],
-        [ ' - ', ' - ', ' - ' ]
+        [ '⬜', '⬜', '⬜' ],
+        [ '⬜', '⬜', '⬜' ],
+        [ '⬜', '⬜', '⬜' ]
     ]
 
     rowIDs = [ 'A', 'B', 'C' ]
-    turn: str = 'O'
+    turn: str = '⭕'
     squaresFilled = 0
 
     #check each turn if someone won and end game if so
@@ -18,20 +18,20 @@ class TicTacToeGame:
 
         for j in range( 0, 3 ):
             #row victory, column victory
-            if ( self.board[j][0] != ' - ' and self.board[j][0] == self.board[j][1] and self.board[j][1] == self.board[j][2] ) \
-            or ( self.board[0][j] != ' - ' and self.board[0][j] == self.board[1][j] and self.board[1][j] == self.board[2][j]  ):
+            if ( self.board[j][0] != '⬜' and self.board[j][0] == self.board[j][1] and self.board[j][1] == self.board[j][2] ) \
+            or ( self.board[0][j] != '⬜' and self.board[0][j] == self.board[1][j] and self.board[1][j] == self.board[2][j]  ):
                 return ''.join( '%s wins!' % self.turn )
 
         #victory by diagonal  top left-> bottom right, or diagonal top right -> bottom left
-        if (self.board[0][0] != ' - ' and self.board[0][0] == self.board[1][1] and self.board[1][1] == self.board[2][2]) \
-        or (self.board[0][2] != ' - ' and self.board[0][2] == self.board[1][1] and self.board[1][1] == self.board[2][0]):
+        if (self.board[0][0] != '⬜' and self.board[0][0] == self.board[1][1] and self.board[1][1] == self.board[2][2]) \
+        or (self.board[0][2] != '⬜' and self.board[0][2] == self.board[1][1] and self.board[1][1] == self.board[2][0]):
             return ''.join('%s wins!' % self.turn)
 
 
     def makeMove(self, move ) -> str:
 
         try: #accept move from player; ask again if input is not correct
-            if self.board[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' - ':
+            if self.board[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == '⬜':
                 self.board[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] = self.turn
             else:
                 return 'This square has already been taken.'
@@ -42,9 +42,9 @@ class TicTacToeGame:
         output: str = '\n'
         #create text representation of board
         for i in range(0, 3):
-            output += ( '%s | %s | %s' % (self.board[i][0], self.board[i][1], self.board[i][2]) )
+            output += ( '%s  %s  %s' % (self.board[i][0], self.board[i][1], self.board[i][2]) )
             if i < 2:
-                output += '\n----------\n'
+                output += '\n'
 
         #check if tie
         self.squaresFilled += 1
@@ -53,10 +53,10 @@ class TicTacToeGame:
 
         victoryStatus = str(self.checkForVictory())
 
-        if self.turn == 'O':
-            self.turn = 'X'
+        if self.turn == '⭕':
+            self.turn = '❌'
         else:
-            self.turn = 'O'
+            self.turn = '⭕'
 
         if victoryStatus == 'None':
             return output
