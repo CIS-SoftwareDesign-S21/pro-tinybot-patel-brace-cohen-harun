@@ -72,9 +72,9 @@ async def on_message(message):
                     else:
                         await message.channel.send(validMove)
                         game.userTurn = False
-                        if(game.checkWin == False or game.checkTie == False):
+                        if game.checkWin == False and game.checkTie == False:
                             await message.channel.send("<@!" + str(game.opponent) + ">, Make your move!")
-                        else:
+                        elif game.checkWin == True:
                             await message.channel.send("<@!" + str(game.user) + ">, Wins!")
                 else:
                     await message.channel.send("<@!" + str(game.user) + "> it's not your turn!")
@@ -86,9 +86,9 @@ async def on_message(message):
                     else:
                         await message.channel.send(validMove)
                         game.userTurn = True
-                        if(game.checkWin == False or game.checkTie == False):
+                        if game.checkWin == False and game.checkTie == False:
                             await message.channel.send("<@!" + str(game.user) + ">, Make your move!")
-                        elif(game.checkWin == True):
+                        elif game.checkWin == True:
                             await message.channel.send("<@!" + str(game.opponent) + ">, Wins!")
                 else:
                     await message.channel.send("<@!" + str(game.opponent) + "> it's not your turn!")

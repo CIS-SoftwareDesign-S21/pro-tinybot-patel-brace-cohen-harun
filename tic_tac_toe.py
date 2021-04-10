@@ -58,7 +58,7 @@ class TicTacToeGame:
 
         #check if tie
         self.squaresFilled += 1
-        if self.squaresFilled == 9:
+        if self.squaresFilled == 9 and not "win" in victoryStatus:
             self.checkTie = True
             self.gameEnd = True
             return output + '\n\nIt\'s a tie!'
