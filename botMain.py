@@ -6,6 +6,7 @@ import os
 
 from coinflip import coinflip
 from tic_tac_toe import TicTacToeGame
+from leaderboard_impl import leaderb
 
 # Bot Takes Token, ClientID, and Permissions from JSON File
 bot_info_file = open("token.json")
@@ -145,27 +146,33 @@ async def ttt(ctx, message=None):
 @client.command()
 async def newUser(ctx):
 
-    #Obtain the User's ID
+    lb = leaderb()
+
+    # Obtain the User's ID
     userID = ctx.author.id
+    print(userID)
+
+    # Send the User ID to Function
+    lb.addNewUser(userID)
 
     # Open the JSON to be Loaded
-    with open("leaderboard2.json") as lb_file:
-        lb_data = json.load(lb_file)
-        print(lb_data)
+#    with open("leaderboard2.json") as lb_file:
+#        lb_data = json.load(lb_file)
+#        print(lb_data)
 
-        temp = lb_data['users']
+#        temp = lb_data['users']
 
         # Create User to Append to JSON File
-        nUser = {"user_name": f"{userID}",
-                 "wins": "0",
-                 "losses": "0"
-                }
+#        nUser = {"user_name": f"{userID}",
+#                 "wins": "0",
+#                 "losses": "0"
+#                }
 
-        temp.append(nUser)
+#        temp.append(nUser)
 
     # Append to JSON File
-    with open("leaderboard2.json", 'w') as file:
-        json.dump(temp, file, indent = 4)
+#    with open("leaderboard2.json", 'w') as file:
+#        json.dump(temp, file, indent = 4)
 
     return
 
