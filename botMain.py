@@ -54,7 +54,7 @@ async def games(ctx):
     await ctx.send(gamesList)
 
 
-# Says Hello to the Specified User who prompted the Command
+# Says Hello to User, if Specified, who prompted the Command
 @client.command()
 async def hello(ctx, message=None):
 
@@ -68,6 +68,20 @@ async def hello(ctx, message=None):
         await ctx.send(f'Hello, {ctx.author.mention}!')
         return
 
+
+# Says Goodbye to User, if Specified, who prompted the Command
+@client.command()
+async def bye(ctx, message=None):
+
+    # Check if only Bye was Passed if so, Say Goodbye
+    if not message:
+        await ctx.send("Goodbye!")
+        return
+
+    # If Tinyboy was Greeted
+    if (message.lower() == "tinybot"):
+        await ctx.send(f'Goodbye, {ctx.author.mention}!')
+        return
 
 # Bot tells you its Mood
 @client.command()
