@@ -129,6 +129,18 @@ async def ttt(ctx, message=None):
 
     return
 
+
+# Command to Play the MicroChess Minigame
+#@client.command()
+#async def chess(ctx, message=None):
+
+    # Instantiate the Game unless a Move is being Played
+#    if not message:
+#        global chessGame
+#        chessGame = MicrochessGame()
+#        path = chessGame.genBoardImage()
+
+
 # Command to Create User ID in Leaderboard
 @client.command()
 async def newUser(ctx):
