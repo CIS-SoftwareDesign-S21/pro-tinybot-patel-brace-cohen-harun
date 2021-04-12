@@ -17,7 +17,7 @@ class TicTacToeGame:
         [ '⬜', '⬜', '⬜' ]
     ]
 
-    rowIDs = [ 'A', 'B', 'C' ]
+    columnIDs = [ 'A', 'B', 'C' ]
     turn: str = '⭕'
     squaresFilled = 0
 
@@ -43,15 +43,13 @@ class TicTacToeGame:
     def makeMove(self, move ) -> str:
 
         try: #accept move from player; ask again if input is not correct
-            # if self.board[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == '⬜':
-            #     self.board[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] = self.turn
-            if self.board[ int( move[1] ) - 1][ self.rowIDs.index( move[0].upper() ) ] == '⬜':
-                self.board[ int( move[1] ) - 1][ self.rowIDs.index( move[0].upper() ) ] = self.turn
+            if self.board[ int( move[1] ) - 1][ self.columnIDs.index( move[0].upper() ) ] == '⬜':
+                self.board[ int( move[1] ) - 1][ self.columnIDs.index( move[0].upper() ) ] = self.turn
             else:
                 return 'Error: This square has already been taken.'
 
         except (IndexError, ValueError):
-            return 'Error: Please input special key \'^\', followed by letter A,B, or C to select row, and integer 1-3 to select column.'
+            return 'Error: Please input special key \'#\', followed by letter A,B, or C to select column, and integer 1-3 to select row.'
         output = self.initBoard()
 
         victoryStatus = str(self.checkForVictory())

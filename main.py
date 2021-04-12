@@ -56,13 +56,13 @@ async def on_message(message):
         game = TicTacToeGame(int(message.author.id),
                              int(opponent), bool(userTurn), bool(checkWin), bool(gameEnd), bool(checkTie))
         game.clearBoard()
-        await message.channel.send('Tic-Tac-Toe game started!\nEnter ^\'Location\' to Move')
-        await message.channel.send('Example: ^A1')
+        await message.channel.send('Tic-Tac-Toe game started!\nEnter #\'Location\' to Move')
+        await message.channel.send('Example: #A1')
         await message.channel.send(game.initBoard())
         await message.channel.send("<@!" + str(game.user) + ">, Make your move!")
 
     # Handels making moves in Tic-Tac-Toe game
-    elif message.content.startswith('^'):
+    elif message.content.startswith('#'):
         if(not game.gameEnd):
             if message.author.id == game.user:
                 if game.userTurn == True:
