@@ -1,7 +1,8 @@
 from PIL import Image
 from chess_pieces import *
+import io
 
-#image for border surrounding the chess board
+#Images for border surrounding the chess board
 img_A = Image.open('microchess-assets/BORDER/A.png')
 img_B = Image.open('microchess-assets/BORDER/B.png')
 img_C = Image.open('microchess-assets/BORDER/C.png')
@@ -38,7 +39,12 @@ img_blackKing_onWhite = Image.open('microchess-assets/ON-WHITE/BLACK-KING.png')
 img_blackKing_onBlack = Image.open('microchess-assets/ON-BLACK/BLACK-KING.png')
 
 
+#creates object representing game; called upon by bot
 class MicrochessGame:
+
+    turn = 0
+    columnIDs = ['A', 'B', 'C', 'D']
+    rowIDs = ['5', '4', '3', '2', '1']
 
     white = { 'P': Pawn(img_whitePawn_onWhite, img_whitePawn_onBlack, 0),
                'B': Bishop(img_whiteBishop_onWhite, img_whiteBishop_onBlack, 0),
@@ -55,6 +61,7 @@ class MicrochessGame:
     }
 
     players = [white, black]
+    playerNames = ['White', 'Black']
 
     emptySquares = { 'white': Image.open('microchess-assets/ON-WHITE/EMPTY.png'), 'black': Image.open('microchess-assets/ON-BLACK/EMPTY.png')}
 
@@ -66,83 +73,84 @@ class MicrochessGame:
         [white['R'], white['B'], white['K'], white['S']]
     ]
 
-#main - init
-game = MicrochessGame()
-turn = 0
-columnIDs = ['A', 'B', 'C', 'D']
-rowIDs = [ '5', '4', '3', '2', '1' ]
 
-#utility functions for managing MicrochessGame obj.
-def changeSpaceColor():
-    global space
-    if space == 'black':
-        space = 'white'
-    else:
-        space = 'black'
+    def makeMove(self, move: str):
+        try:
+            selectedPiece = self.players[self.turn][move[0].upper()]
+        except:
+            return 'This piece doesn\'t exist.', False
 
+        toColumn: int = int(self.columnIDs.index(move[1].upper()))
+        toRow: int = self.rowIDs.index(move[2])
+        fromRow, fromColumn = self.findPiece(move[0].upper())
 
-def changeTurn():
-    global turn
-    if turn == 0:
-        turn = 1
-    else:
-        turn = 0
+        output = ''
 
-
-def findPiece(c):
-    for i in range(len(game.board)):
-        for j in range(len(game.board[i])):
-            if game.board[i][j] == game.players[turn][c]:
-                return i, j
-    return None, None
-
-
-#game loop
-while True:
-    turnResult = Image.new('RGB', (260, 312))
-    for column in range(0, 4):
-        turnResult.paste( letterImages[column], (52 + column * 52, 0) )
-    for row in range(0, 5):
-        turnResult.paste( numImages[row], (0, 52 + row * 52) )
-
-    x = 52
-    y = 52
-    output = ''
-    space = 'black'
-
-    for row in game.board:
-        for piece in row:
-            if piece == None:
-                turnResult.paste( game.emptySquares[space], (x, y) )
-            else:
-                turnResult.paste( piece.icons[space], (x, y) )
-            x += 52 #next spot over
-            changeSpaceColor()
-
-        x = 52 #next row
-        y += 52
-        changeSpaceColor()
-
-    turnResult.save( 'board.png' )
-
-    while True:
-        playerNames = ['White', 'Black']
-        move = input( '%s\'s move: ' % playerNames[turn] )
-        selectedPiece = game.players[turn][move[0].upper()]
-        toColumn: int = int( columnIDs.index(move[1].upper() ))
-        toRow: int = rowIDs.index(move[2])
-
-        fromRow, fromColumn = findPiece( move[0].upper() )
         if fromRow == None:
-            print("This piece has been captured.")
-            continue
+            output += "This piece has been captured."
+            return output, False
 
-        print('Attempting to move %s from (%s, %s) to (%s, %s).' % (selectedPiece.name, fromRow, fromColumn, toRow, toColumn))
+        #print('Attempting to move %s from (%s, %s) to (%s, %s).' % ( selectedPiece.name, fromRow, fromColumn, toRow, toColumn))
 
-        if selectedPiece.canMakeMove( int(fromRow), int(fromColumn), int(toRow), int(toColumn), game.board):
-            game.board[toRow][toColumn] = game.board[fromRow][fromColumn]
-            game.board[fromRow][fromColumn] = None
-            changeTurn()
-            break
+        if selectedPiece.canMakeMove(int(fromRow), int(fromColumn), int(toRow), int(toColumn), self.board):
+            self.board[toRow][toColumn] = self.board[fromRow][fromColumn]
+            self.board[fromRow][fromColumn] = None
+            self.changeTurn()
+            output += "%s\'s move!" % self.playerNames[self.turn]
+            return output, True
         else:
-            print( 'This is an invalid move.' )
+            output += 'This is an invalid move.'
+            return output, False
+
+
+    def genBoardImage(self):
+        turnResult = Image.new('RGB', (260, 312))
+        for column in range(0, 4):
+            turnResult.paste(letterImages[column], (52 + column * 52, 0))
+        for row in range(0, 5):
+            turnResult.paste(numImages[row], (0, 52 + row * 52))
+
+        x = 52
+        y = 52
+        output = ''
+        self.space = 'black'
+
+        for row in self.board:
+            for piece in row:
+                if piece == None:
+                    turnResult.paste(self.emptySquares[self.space], (x, y))
+                else:
+                    turnResult.paste(piece.icons[self.space], (x, y))
+                x += 52  # next spot over
+                self.changeSpaceColor()
+
+            x = 52  # next row
+            y += 52
+            self.changeSpaceColor()
+
+        #return turnResult
+        turnResult.save('board.png')
+        #with io.BytesIO() as delivery:
+            #turnResult.save(delivery, format='PNG')
+            #delivery.seek(0)
+            ##return delivery
+        return 'board.png'
+
+    def changeSpaceColor(self):
+        if self.space == 'black':
+            self.space = 'white'
+        else:
+            self.space = 'black'
+
+    def changeTurn(self):
+        if self.turn == 0:
+            self.turn = 1
+        else:
+            self.turn = 0
+
+    def findPiece(self, c):
+        for i in range(len(self.board)):
+            for j in range(len(self.board[i])):
+                if self.board[i][j] == self.players[self.turn][c]:
+                    return i, j
+        return None, None

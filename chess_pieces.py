@@ -74,7 +74,7 @@ class Bishop(ChessPiece):
         toColumn += addColumn
         toRow += addRow
         while toRow != fromRow:
-            print('checking path at (%s, %s)' % (toRow, toColumn) )
+            #print('checking path at (%s, %s)' % (toRow, toColumn) )
 
             if board[int(toRow)][int(toColumn)] != None:
                 return False
