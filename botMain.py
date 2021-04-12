@@ -149,8 +149,6 @@ async def newUser(ctx):
                  "losses": "0"
                 }
 
-        # print(json.dumps(lb_data))
-
         temp.append(nUser)
 
     # Append to JSON File
