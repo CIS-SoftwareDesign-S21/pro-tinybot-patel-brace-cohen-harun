@@ -44,6 +44,13 @@ async def hello(ctx, message=None):
         return
 
 
+# Bot tells you its Mood
+@client.command()
+async def mood(ctx):
+
+    await ctx.send('I am good! Thank you for asking!')
+    return
+
 # Command to Make a Coin Flip
 @client.command()
 async def coinf(ctx):
