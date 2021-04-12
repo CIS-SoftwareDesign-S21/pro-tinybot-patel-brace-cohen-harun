@@ -63,9 +63,9 @@ class BattleShipGame:
         #now that we checked the spot, we can put the ship in
         for i in range(0,sizeOfShip):
             if(orientation ==1): #if horizontal
-                board[row][col +i] = ' o '
+                board[row][col +i] = 'o'
             elif(orientation ==2): #if vertical
-                board[row+i][col] = ' o '
+                board[row+i][col] = 'o'
 
 
 
@@ -88,7 +88,7 @@ class BattleShipGame:
         compWon = 1
         for r in range(0,4):
             for c in range(0,4):
-                if(self.userBoard[r][c] == ' o '):
+                if(self.userBoard[r][c] == 'o'):
                     compWon=0
 
         #check the comp board to see if the user won
@@ -97,7 +97,7 @@ class BattleShipGame:
         numx=0
         for r in range(0,5):
             for c in range(0,5):
-                if(self.comBoardToShowUser[r][c] == ' x '):
+                if(self.comBoardToShowUser[r][c] == 'x'):
                     numx += 1
 
         if numx < 9:
@@ -115,15 +115,15 @@ class BattleShipGame:
 
         try: #accept move from player; ask again if input is not correct
             #possibilities, repeat spot, hit ship, hit nothing
-            if(self.comBoardToShowUser[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' m ' or self.comBoardToShowUser[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' x ' ):#first check if it is a repeat spot
+            if(self.comBoardToShowUser[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == 'm' or self.comBoardToShowUser[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == 'x' ):#first check if it is a repeat spot
                 output+= '\nYou picked a repeat space\n'
             elif self.comBoard[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' - ':#you hit an empty spot
-                self.comBoardToShowUser[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] = ' m '#show the user that they hit an empty spot
+                self.comBoardToShowUser[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] = 'm'#show the user that they hit an empty spot
                 output += "\nYou missed\n"
                 #self.comBoard[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] = self.turn
-            elif(self.comBoard[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == ' o '):#they hit a part of a ship
+            elif(self.comBoard[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] == 'o'):#they hit a part of a ship
                 self.comBoardToShowUser[self.rowIDs.index(move[0].upper())][
-                    int(move[1]) - 1] = ' x '  # show the user that they hit a ship
+                    int(move[1]) - 1] = 'x'  # show the user that they hit a ship
                 output += "\nYou hit their ship\n"
             else:
                 return '\nI did not account for this option in the code.\n'
@@ -143,14 +143,14 @@ class BattleShipGame:
         compcol = random.randint(0, 4)
         output += "\nThe computer picked spot " + self.rowIDs[comprow] + str(compcol+1)+ "\n"
 
-        if (self.userBoard[comprow][compcol] == ' m ' or self.userBoard[comprow][compcol] == ' x '):  # first check if it is a repeat spot
+        if (self.userBoard[comprow][compcol] == 'm' or self.userBoard[comprow][compcol] == 'x'):  # first check if it is a repeat spot
             output+= '\nThe computer picked a repeat space\n'
         elif self.userBoard[comprow][compcol] == ' - ':  # computer hit an empty spot
-            self.userBoard[comprow][compcol] = ' m '  # show the computer that they hit an empty spot
+            self.userBoard[comprow][compcol] = 'm'  # show the computer that they hit an empty spot
             output += "\nThe computer missed\n"
             # self.comBoard[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] = self.turn
-        elif (self.userBoard[comprow][compcol] == ' o '):  # computer hit a part of a ship
-            self.userBoard[comprow][compcol] = ' x '  # show the user that computer hit a ship
+        elif (self.userBoard[comprow][compcol] == 'o'):  # computer hit a part of a ship
+            self.userBoard[comprow][compcol] = 'x'  # show the user that computer hit a ship
             output += "\nThe computer hit your ship\n"
         else:
             return '\nI did not account for this option in the code.\n'
@@ -170,11 +170,11 @@ class BattleShipGame:
             self.userBoard[i][0], self.userBoard[i][1], self.userBoard[i][2], self.userBoard[i][3],
             self.userBoard[i][4]))
 
-        output += "\nThe computer's real board: \n"
-        for i in range(0, 5):
-            output += ('%s %s %s %s %s\n' % (
-                self.comBoard[i][0], self.comBoard[i][1], self.comBoard[i][2],
-                self.comBoard[i][3], self.comBoard[i][4]))
+        #output += "\nThe computer's real board: \n"
+        #for i in range(0, 5):
+            #output += ('%s %s %s %s %s\n' % (
+                #self.comBoard[i][0], self.comBoard[i][1], self.comBoard[i][2],
+                #self.comBoard[i][3], self.comBoard[i][4]))
 
         #check for victory
         victoryStatus = "no"
