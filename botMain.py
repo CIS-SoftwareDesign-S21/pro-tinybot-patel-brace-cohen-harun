@@ -75,8 +75,19 @@ async def coinf(ctx):
 
 
 # Command to Play the Tic-Tac-Toe Minigame
-# @client.command()
-# async def ttt(ctx, *):
+@client.command()
+async def ttt(ctx, message=None):
 
+    # Instantiate the Game unless a Move is being Played
+    if not message:
+        global game
+        game = TicTacToeGame()
+        await ctx.send("Tic-Tac-Toe game started!")
+
+    # Make the Move Given
+    move = ctx.message.content[5:]
+    await ctx.send(game.makeMove(move))
+
+    return
 
 client.run(bot_info['token'])   
