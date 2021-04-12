@@ -65,7 +65,7 @@ async def hello(ctx, message=None):
 
     # If Tinyboy was Greeted
     if (message.lower() == "tinybot"):
-        await ctx.send(f'Hello, {ctx.author.name}!')
+        await ctx.send(f'Hello, {ctx.author.mention}!')
         return
 
 
