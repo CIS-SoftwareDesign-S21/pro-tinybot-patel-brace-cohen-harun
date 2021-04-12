@@ -21,6 +21,8 @@ class leaderb:
     # Function to Add a New User to the Leaderboard
     def addNewUser(ctx, userID):
 
+        #### Insure User Doesn't already Exist ####
+
         # Open the JSON to be Loaded
         with open("leaderboard2.json") as lb_file:
             lb_data = json.load(lb_file)
