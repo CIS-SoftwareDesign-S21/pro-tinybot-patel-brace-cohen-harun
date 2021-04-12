@@ -62,7 +62,7 @@ async def on_message(message):
         await message.channel.send("<@!" + str(game.user) + ">, Make your move!")
 
     # Handels making moves in Tic-Tac-Toe game
-    elif message.content.startswith('#'):
+    elif message.content.startswith('^'):
         if(not game.gameEnd):
             if message.author.id == game.user:
                 if game.userTurn == True:

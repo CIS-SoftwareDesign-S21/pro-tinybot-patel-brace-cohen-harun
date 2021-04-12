@@ -49,7 +49,7 @@ class TicTacToeGame:
                 return 'Error: This square has already been taken.'
 
         except (IndexError, ValueError):
-            return 'Error: Please input special key \'#\', followed by letter A,B, or C to select column, and integer 1-3 to select row.'
+            return 'Error: Please input special key \'^\', followed by letter A,B, or C to select column, and integer 1-3 to select row.'
         output = self.initBoard()
 
         victoryStatus = str(self.checkForVictory())
