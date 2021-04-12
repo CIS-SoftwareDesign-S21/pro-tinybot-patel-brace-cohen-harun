@@ -21,12 +21,37 @@ print()
 # client = discord.Client()
 client = commands.Bot(command_prefix={bot_info['prefix']}, description="Bot to play Minigames.")
 
+# Game Dictionary
+gameDictionary = {
+
+    "Hello" : "hello",
+    "Mood" : "mood",
+    "Coinflip" : "coinf",
+    "Tic-Tac-Toe" : "ttt"
+
+}
+
 # Once Bot is Logged In and Ready on Discord Server Notification
 @client.event
 async def on_ready():
     print(f"We have Logged In as {client.user}")
     print(f"Bot ID: {client.user.id}")
     print()
+
+
+# Display a List of Commands to Use
+@client.command()
+async def games(ctx):
+
+    # Variable to Hold the List
+    gamesList = ""
+
+    # Appends all Available Commands/Games to Play to a String (Acting as a List to Display)
+    for game in gameDictionary:
+        gamesList += game + "\n"
+
+    # Sends the List of Available Sounds to Play to the Discord Channel
+    await ctx.send(gamesList)
 
 
 # Says Hello to the Specified User who prompted the Command
