@@ -106,11 +106,13 @@ async def on_message(message):
     elif message.content.startswith( '$coin' ):
         embed = discord.Embed()
         result = coinflip()
-        embed.title = result
+        # embed.title = result
         if(result == "HEADS"):
-            embed.set_image(url="https://bjc.edc.org/June2017/bjc-r/img/5-algorithms/img_flipping-a-coin/Heads.png")
+            embed.set_image(
+                url="https://media1.tenor.com/images/20f12dfa0e544b7c1045c903c572f9ec/tenor.gif?itemid=20771728")
         else:
-            embed.set_image(url="https://bjc.edc.org/June2017/bjc-r/img/5-algorithms/img_flipping-a-coin/Tails.png")
+            embed.set_image(
+                url="https://media1.tenor.com/images/51e09c7f9e8051ab944f0aaeed426e80/tenor.gif?itemid=20771732")
         await message.channel.send(embed = embed)
     elif message.content.startswith( '$how are you' ):
         await message.channel.send('I am good! Thank you for asking')
