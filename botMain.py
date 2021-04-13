@@ -112,7 +112,7 @@ async def coinf(ctx):
 
 # Command to Play the Tic-Tac-Toe Minigame
 @client.command()
-async def ttt(ctx, user: discord.User):
+async def ttt(ctx, *, user: discord.User):
 
     # Instantiate the Game unless a Move is being Played
     global game
