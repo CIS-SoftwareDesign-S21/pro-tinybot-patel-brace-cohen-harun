@@ -70,19 +70,15 @@ async def hello(ctx, message=None):
         return
 
 
-# Says Goodbye to User, if Specified, who prompted the Command
+# Says Goodbye and Shuts Down the Bot
 @client.command()
 async def bye(ctx, message=None):
 
     # Check if only Bye was Passed if so, Say Goodbye
     if not message:
         await ctx.send("Goodbye!")
-        return
-
-    # If Tinyboy was Greeted
-    if (message.lower() == "tinybot"):
-        await ctx.send(f'Goodbye, {ctx.author.mention}!')
-        return
+        await client.logout()
+        await client.close()
 
 # Bot tells you its Mood
 @client.command()
@@ -104,9 +100,9 @@ async def coinf(ctx):
 
     # Display Appropriate Image
     if result == "HEADS":
-        embedVar.set_image(url="https://bjc.edc.org/June2017/bjc-r/img/5-algorithms/img_flipping-a-coin/Heads.png")
+        embedVar.set_image(url="https://media1.tenor.com/images/20f12dfa0e544b7c1045c903c572f9ec/tenor.gif?itemid=20771728")
     else:
-        embedVar.set_image(url="https://bjc.edc.org/June2017/bjc-r/img/5-algorithms/img_flipping-a-coin/Tails.png")
+        embedVar.set_image(url="https://media1.tenor.com/images/51e09c7f9e8051ab944f0aaeed426e80/tenor.gif?itemid=20771732")
     
     # Send the Image
     await ctx.send(embed = embedVar)

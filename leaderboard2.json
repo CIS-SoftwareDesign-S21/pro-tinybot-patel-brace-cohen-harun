@@ -1,14 +1,17 @@
-{
-    "users": [
-        {
-            "user_name": "",
-            "wins": "",
-            "losses": ""
-        },
-        {
-            "user_name": "",
-            "wins": "",
-            "losses": ""
-        }
-    ]
-}
+[
+    {
+        "user_name": "",
+        "wins": "",
+        "losses": ""
+    },
+    {
+        "user_name": "",
+        "wins": "",
+        "losses": ""
+    },
+    {
+        "user_name": "154378512306929675",
+        "wins": "0",
+        "losses": "0"
+    }
+]
