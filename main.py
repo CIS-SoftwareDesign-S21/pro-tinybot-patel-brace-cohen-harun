@@ -4,6 +4,8 @@ import os
 from tic_tac_toe import TicTacToeGame
 from battleShip import BattleShipGame
 from coinflip import coinflip
+from microchess import MicrochessGame
+
 
 user = ""
 opponent = ""
@@ -13,6 +15,7 @@ gameEnd = False
 checkTie = False
 game: TicTacToeGame = TicTacToeGame(user, opponent, userTurn, checkWin, gameEnd, checkTie)
 game2: BattleShipGame = BattleShipGame()
+chessGame: MicrochessGame = None
 
 client = discord.Client()
 
@@ -103,14 +106,31 @@ async def on_message(message):
     elif message.content.startswith( '$coin' ):
         embed = discord.Embed()
         result = coinflip()
-        embed.title = result
+        # embed.title = result
         if(result == "HEADS"):
-            embed.set_image(url="https://bjc.edc.org/June2017/bjc-r/img/5-algorithms/img_flipping-a-coin/Heads.png")
+            embed.set_image(
+                url="https://media1.tenor.com/images/20f12dfa0e544b7c1045c903c572f9ec/tenor.gif?itemid=20771728")
         else:
-            embed.set_image(url="https://bjc.edc.org/June2017/bjc-r/img/5-algorithms/img_flipping-a-coin/Tails.png")
+            embed.set_image(
+                url="https://media1.tenor.com/images/51e09c7f9e8051ab944f0aaeed426e80/tenor.gif?itemid=20771732")
         await message.channel.send(embed = embed)
     elif message.content.startswith( '$how are you' ):
         await message.channel.send('I am good! Thank you for asking')
+    elif message.content.startswith('chess'):
+        global chessGame
+        chessGame = MicrochessGame()
+        path = chessGame.genBoardImage()
+        await message.channel.send(file=discord.File(path))
+        await message.channel.send('A chess game has started!\nWhite, it\'s your move.')
+        await message.channel.send('Enter * followed by a letter for your piece: P - Pawn, B- Bishop, K - Knight, R - Rook, S - King')
+        await message.channel.send('Piece ID should be followed by Column and Row ID')
+        await message.channel.send('For example, *KB3 is a good opening move.')
+    elif message.content.startswith('*'):
+        updateMessage, playerMoved = chessGame.makeMove(message.content[1:])
+        if playerMoved:
+            path = chessGame.genBoardImage()
+            await message.channel.send(file=discord.File(path))
+        await message.channel.send(updateMessage)
 
     elif message.content.startswith('battleship'):
         global game2  
