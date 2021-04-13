@@ -4,6 +4,8 @@ import os
 from tic_tac_toe import TicTacToeGame
 from battleShip import BattleShipGame
 from coinflip import coinflip
+from microchess import MicrochessGame
+
 
 user = ""
 opponent = ""
@@ -13,6 +15,7 @@ gameEnd = False
 checkTie = False
 game: TicTacToeGame = TicTacToeGame(user, opponent, userTurn, checkWin, gameEnd, checkTie)
 game2: BattleShipGame = BattleShipGame()
+chessGame: MicrochessGame = None
 
 client = discord.Client()
 
@@ -111,6 +114,21 @@ async def on_message(message):
         await message.channel.send(embed = embed)
     elif message.content.startswith( '$how are you' ):
         await message.channel.send('I am good! Thank you for asking')
+    elif message.content.startswith('chess'):
+        global chessGame
+        chessGame = MicrochessGame()
+        path = chessGame.genBoardImage()
+        await message.channel.send(file=discord.File(path))
+        await message.channel.send('A chess game has started!\nWhite, it\'s your move.')
+        await message.channel.send('Enter * followed by a letter for your piece: P - Pawn, B- Bishop, K - Knight, R - Rook, S - King')
+        await message.channel.send('Piece ID should be followed by Column and Row ID')
+        await message.channel.send('For example, *KB3 is a good opening move.')
+    elif message.content.startswith('*'):
+        updateMessage, playerMoved = chessGame.makeMove(message.content[1:])
+        if playerMoved:
+            path = chessGame.genBoardImage()
+            await message.channel.send(file=discord.File(path))
+        await message.channel.send(updateMessage)
 
     elif message.content.startswith('battleship'):
         global game2  
