@@ -2,6 +2,7 @@ from typing import Any
 import discord
 import os
 from tic_tac_toe import TicTacToeGame
+from battleShip import BattleShipGame
 from coinflip import coinflip
 
 user = ""
@@ -10,8 +11,8 @@ userTurn = True
 checkWin = False
 gameEnd = False
 checkTie = False
-game: TicTacToeGame = TicTacToeGame(
-    user, opponent, userTurn, checkWin, gameEnd, checkTie)
+game: TicTacToeGame = TicTacToeGame(user, opponent, userTurn, checkWin, gameEnd, checkTie)
+game2: BattleShipGame = BattleShipGame()
 
 client = discord.Client()
 
@@ -110,6 +111,14 @@ async def on_message(message):
         await message.channel.send(embed = embed)
     elif message.content.startswith( '$how are you' ):
         await message.channel.send('I am good! Thank you for asking')
+
+    elif message.content.startswith('battleship'):
+        global game2  
+        game2 = BattleShipGame()
+        await message.channel.send('BattleShip game started!')
+
+    elif message.content.startswith('#'):
+        await message.channel.send(game2.makeMove(message.content[1:]))
 
 
 client.run('ODIzOTIyODMwOTI4Mzc5OTI0.YFn37g.qBiNOnlxbAgc7n4jfu9GQi2dkQk')
