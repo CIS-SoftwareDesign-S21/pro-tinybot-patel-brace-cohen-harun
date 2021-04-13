@@ -6,6 +6,8 @@ import os
 
 from coinflip import coinflip
 from tic_tac_toe import TicTacToeGame
+from microchess import MicrochessGame
+from battleShip import BattleShipGame
 from leaderboard_impl import leaderb
 
 # Bot Takes Token, ClientID, and Permissions from JSON File
@@ -133,22 +135,64 @@ async def ttt(ctx, *, user: discord.User):
     await ctx.send(f"{ctx.author.mention}, Make your move!")
 
     # Make the Move Given
-    move = ctx.message.content[5:]
-    await ctx.send(game.makeMove(move))
+    if not user:
+        if not game.gameEnd:
+            move = ctx.message.content[5:]
+            print(move)
+            await ctx.send(game.makeMove(move))
 
     return
 
 
 # Command to Play the MicroChess Minigame
-#@client.command()
-#async def chess(ctx, message=None):
+@client.command()
+async def chess(ctx, message=None):
 
     # Instantiate the Game unless a Move is being Played
-#    if not message:
-#        global chessGame
-#        chessGame = MicrochessGame()
-#        path = chessGame.genBoardImage()
+    if not message:
+        global chessGame
+        chessGame = MicrochessGame()
+        path = chessGame.genBoardImage()
+        await ctx.send(file=discord.File(path))
+        await ctx.send('A chess game has started!\nWhite, it\'s your move.')
+        await ctx.send('Enter * followed by a letter for your piece: P - Pawn, B- Bishop, K - Knight, R - Rook, S - King')
+        await ctx.send('Piece ID should be followed by Column and Row ID')
+        await ctx.send('For example, *KB3 is a good opening move.')
 
+    # Make the Move Given
+    move = ctx.message.content[7:]
+    
+    # For Testing Purposes
+    print(move)
+
+    updateMessage, playerMoved = chessGame.makeMove(move)
+    if playerMoved:
+        path = chessGame.genBoardImage()
+        await ctx.send(file=discord.File(path))
+    await ctx.send(updateMessage)
+
+    return
+
+
+# Command to Play the Battleship Game
+@client.command()
+async def battleship(ctx, message=None):
+
+    # Instantiate the Game unless a Game is already being Played
+    if not message:
+        global battleshipGame
+        battleshipGame = BattleShipGame()
+        await ctx.send("Battleship game started!")
+
+    # Make the Move Given
+    move = ctx.message.content[12:]
+
+    # For Testing Purposes
+    print(move)
+
+    await ctx.send(battleshipGame.makeMove(move))
+
+    return
 
 # Command to Create User ID in Leaderboard
 @client.command()
