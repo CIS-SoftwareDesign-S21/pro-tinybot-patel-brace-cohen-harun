@@ -116,24 +116,25 @@ async def coinf(ctx):
 
 # Command to Play the Tic-Tac-Toe Minigame
 @client.command()
-async def ttt(ctx, message=None):
+async def ttt(ctx, user: discord.User):
 
     # Instantiate the Game unless a Move is being Played
-    if not message:
-        global game
-        opponent = message.content.replace('ttt ', '')
-        opponent = getUserFromMention(opponent)
-        userTurn = True
-        checkWin = False
-        gameEnd = False
-        checkTie = False
-        game = TicTacToeGame(int(ctx.author.id),
-                             int(opponent), bool(userTurn), bool(checkWin), bool(gameEnd), bool(checkTie))
-        game.clearBoard()
-        await ctx.send('Tic-Tac-Toe game started!\nEnter #\'Location\' to Move')
-        await ctx.send('Example: #A1')
-        await ctx.send(game.initBoard())
-        await ctx.send(f"{ctx.author.mention}, Make your move!")
+    global game
+    opponent = user.id
+
+    # For Testing Purposes
+    #print(opponent) 
+
+    userTurn = True
+    checkWin = False
+    gameEnd = False
+    checkTie = False
+    game = TicTacToeGame(int(ctx.author.id), int(opponent), bool(userTurn), bool(checkWin), bool(gameEnd), bool(checkTie))
+    game.clearBoard()
+    await ctx.send('Tic-Tac-Toe game started!\nEnter #\'Location\' to Move')
+    await ctx.send('Example: #A1')
+    await ctx.send(game.initBoard())
+    await ctx.send(f"{ctx.author.mention}, Make your move!")
 
     # Make the Move Given
     move = ctx.message.content[5:]
