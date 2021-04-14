@@ -144,30 +144,50 @@ async def on_message(message):
         global blackjackGame
         blackjackGame = blackJack()
         blackjackGame.start()
-        await message.channel.send("Welcome to Black Jack")
-        await message.channel.send(blackjackGame.checkBoard())
-        await message.channel.send("Enter &H to Hit or &S to Stand")
-        # blackjackGame.checkBoard()
-        # await message.channel.send("BlackJack Start")
-        # embed = discord.Embed()
-        # embed.title = "Black Jack Game"
-        # embed.add_field(name="Dealer", value=blackjackGame.dealer)
-        # embed.add_field(name="Player", value=blackjackGame.player)
-        # embed.description = "Enter &H to Hit or &S to Stand"
-        # await message.channel.send(embed= embed)
+        embed = discord.Embed(title="BlackJack", color=0xe60a0a)
+        embed.set_thumbnail(
+            url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+        embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
+        embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+        embed.set_footer(text="Enter &H to Hit or &S to Stand")
+        await message.channel.send(embed=embed)
 
     elif message.content.startswith('&'):
         if(message.content[1:] == 'H'):
+            embed = discord.Embed(title="BlackJack", color=0xe60a0a)
             blackjackGame.choice(message.content[1:])
-            await message.channel.send(blackjackGame.checkBoard())
             if(blackjackGame.done == 1):
-                await message.channel.send(blackjackGame.result())
-            await message.channel.send("Enter &H to Hit or &S to Stand")
+                result = blackjackGame.result()
+                if (result == 1):
+                    embed.set_footer(text="PLAYER WIN")
+                elif (result == 2):
+                    embed.set_footer(text="DRAW")
+                else:
+                    embed.set_footer(text="PLAYER LOSE")
+            else:
+                embed.set_footer(text="Enter &H to Hit or &S to Stand")
+            embed.set_thumbnail(
+                url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+            embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
+            embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+            await message.channel.send(embed=embed)
         elif( message.content[1:] == 'S'):
             blackjackGame.choice(message.content[1:])
             blackjackGame.dealerTurn()
-            await message.channel.send(blackjackGame.checkBoard())
-            await message.channel.send(blackjackGame.result())
+            embed = discord.Embed(title="BlackJack", color=0xe60a0a)
+            embed.set_thumbnail(
+                url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+            embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
+            embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+            result = blackjackGame.result()
+
+            if (result == 1):
+                embed.set_footer(text="PLAYER WIN")
+            elif (result == 2):
+                embed.set_footer(text="DRAW")
+            else:
+                embed.set_footer(text="PLAYER LOSE")
+            await message.channel.send(embed=embed)
         else:
             await message.channel.send("Wrong Input")
 

@@ -1,6 +1,4 @@
 import random
-import os
-import discord
 
 
 class blackJack:
@@ -42,7 +40,7 @@ class blackJack:
         if (self.bust == 1):
             output += "\nBUST!"
             output += "\nPLAYER LOSE"
-            return output
+            return 3
         self.totalDealer = self.sum(self.dealer)
         if(len(self.player) > 4 and self.total<=21):
             output += "\n5 CARDS"
@@ -50,7 +48,7 @@ class blackJack:
         if(self.totalDealer > 21):
             output += "\nDEALER BUST!"
             output += "\nPLAYER WIN"
-            return output
+            return 1
         if(self.total < self.totalDealer):
             self.totalDealer = self.sum(self.dealer)
             self.total = self.sum(self.player)
@@ -60,12 +58,12 @@ class blackJack:
             return output
         elif(self.total == self.totalDealer):
             output += "\nDRAW"
-            return output
+            return 2
         else:
             if(self.total == 21):
                 output += "\nBLACKJACK"
             output += "\nPLAYER WIN"
-            return output
+            return 1
 
     def dealerTurn(self):
         self.totalDealer = self.sum(self.dealer)
@@ -84,16 +82,6 @@ class blackJack:
         self.done = 0
         self.isACE = 0
 
-    # client = discord.Client()
-    # @client.command()
-    # async def ctt(ctx):
-    #     embed = discord.Embed(title="BlackJack", color=0xe60a0a)
-    #     embed.set_thumbnail(
-    #         url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
-    #     embed.add_field(name="Dealer", value=self.dealer, inline=False)
-    #     embed.add_field(name="Player", value=self.player, inline=False)
-    #     embed.set_footer(text="Enter &H to Hit or &S to Stand")
-    #     await self.message.channel.send(embed=embed)
     def checkBoard(self):
         output = ''
         output += 'DEALER: \n'
@@ -106,15 +94,6 @@ class blackJack:
             output += i
             output += ' | '
         output += '\n\n'
-        # print("DEALER: ")
-        # for i in self.dealer:
-        #     print(i,end=" ")
-        # print("")
-        # print("PLAYER: ")
-        # for i in self.player:
-        #     print(i,end=" ")
-        # print("")
-        # print("")
         return output
 
     def sum(self,arr):
@@ -137,10 +116,3 @@ class blackJack:
             self.isACE = self.isACE - 1
 
         return (sum)
-
-# print("WELCOME TO BLACKJACK")
-# game = blackJack()
-# game.start()
-# game.checkBoard()
-# game.choice()
-# game.result()
