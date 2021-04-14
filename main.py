@@ -5,7 +5,7 @@ from tic_tac_toe import TicTacToeGame
 from battleShip import BattleShipGame
 from coinflip import coinflip
 from microchess import MicrochessGame
-
+from blackJack import blackJack
 
 user = ""
 opponent = ""
@@ -139,6 +139,38 @@ async def on_message(message):
 
     elif message.content.startswith('#'):
         await message.channel.send(game2.makeMove(message.content[1:]))
+    #BlackJack
+    elif message.content.startswith('&blackjack'):
+        global blackjackGame
+        blackjackGame = blackJack()
+        blackjackGame.start()
+        await message.channel.send("Welcome to Black Jack")
+        await message.channel.send(blackjackGame.checkBoard())
+        await message.channel.send("Enter &H to Hit or &S to Stand")
+        # blackjackGame.checkBoard()
+        # await message.channel.send("BlackJack Start")
+        # embed = discord.Embed()
+        # embed.title = "Black Jack Game"
+        # embed.add_field(name="Dealer", value=blackjackGame.dealer)
+        # embed.add_field(name="Player", value=blackjackGame.player)
+        # embed.description = "Enter &H to Hit or &S to Stand"
+        # await message.channel.send(embed= embed)
+
+    elif message.content.startswith('&'):
+        if(message.content[1:] == 'H'):
+            blackjackGame.choice(message.content[1:])
+            await message.channel.send(blackjackGame.checkBoard())
+            if(blackjackGame.done == 1):
+                await message.channel.send(blackjackGame.result())
+            await message.channel.send("Enter &H to Hit or &S to Stand")
+        elif( message.content[1:] == 'S'):
+            blackjackGame.choice(message.content[1:])
+            blackjackGame.dealerTurn()
+            await message.channel.send(blackjackGame.checkBoard())
+            await message.channel.send(blackjackGame.result())
+        else:
+            await message.channel.send("Wrong Input")
+
 
 
 client.run('ODIzOTIyODMwOTI4Mzc5OTI0.YFn37g.qBiNOnlxbAgc7n4jfu9GQi2dkQk')

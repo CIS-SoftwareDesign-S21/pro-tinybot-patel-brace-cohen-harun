@@ -1,11 +1,12 @@
 import random
+import os
+import discord
+
 
 class blackJack:
-    symbol = ['♠', '♣', '♥', '♦']
-
     def __init__(self):
         self.cards = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'] * 4
-        # self.symbol = ['♠', '♣', '♥', '♦']
+        self.symbol = ['♡', '♢', '♤', '♧']
         self.player = []
         self.dealer = []
         self.bust = 0
@@ -21,55 +22,57 @@ class blackJack:
             self.player.append(self.cards.pop() + random.choice(self.symbol))
 
 
-    def choice(self):
+    def choice(self,move):
         self.total = self.sum(self.player)
-        while(self.done == 0):
-            playerChoice = input("Enter H to Hit or S to Stand :")
-            if(playerChoice == "H"):
-                self.player.append(self.cards.pop() + random.choice(self.symbol))
-                self.total = self.sum(self.player)
-                if(self.total > 21):
-                    self.done = 1
-                    self.bust = 1
-                self.checkBoard()
-            elif(playerChoice == "S"):
-                self.total = self.sum(self.player)
+
+        if(move == "H"):
+            self.player.append(self.cards.pop() + random.choice(self.symbol))
+            self.total = self.sum(self.player)
+            if(self.total > 21):
                 self.done = 1
-            else:
-                print("WRONG INPUT")
+                self.bust = 1
+        elif(move == "S"):
+            self.total = self.sum(self.player)
+            self.done = 1
+        return self.checkBoard()
+            # self.result()
 
     def result(self):
+        output = ''
         if (self.bust == 1):
-            print("BUST!")
-            print("PLAYER LOSE")
-            return 0
+            output += "\nBUST!"
+            output += "\nPLAYER LOSE"
+            return output
         self.totalDealer = self.sum(self.dealer)
-        while(self.totalDealer < 21 and self.totalDealer <= self.total and self.bust == 0):
-            self.dealer.append(self.cards.pop() + random.choice(self.symbol))
-            self.totalDealer = self.sum(self.dealer)
-            self.checkBoard()
         if(len(self.player) > 4 and self.total<=21):
-            print("5 CARDS")
-            print("PLAYER WIN")
+            output += "\n5 CARDS"
+            output += "\nPLAYER WIN"
         if(self.totalDealer > 21):
-            print("DEALER BUST!")
-            print("PLAYER WIN")
-            return 1
+            output += "\nDEALER BUST!"
+            output += "\nPLAYER WIN"
+            return output
         if(self.total < self.totalDealer):
             self.totalDealer = self.sum(self.dealer)
             self.total = self.sum(self.player)
             print("DEALER HAVE: ", self.totalDealer)
             print("PLAYER HAVE: ", self.total)
-            print("PLAYER LOSE")
-            return 0
+            output += "\nPLAYER LOSE"
+            return output
         elif(self.total == self.totalDealer):
-            print("DRAW")
-            return 2
+            output += "\nDRAW"
+            return output
         else:
             if(self.total == 21):
-                print("BLACKJACK")
-            print("PLAYER WIN")
-            return 1
+                output += "\nBLACKJACK"
+            output += "\nPLAYER WIN"
+            return output
+
+    def dealerTurn(self):
+        self.totalDealer = self.sum(self.dealer)
+        while (self.totalDealer < 21 and self.totalDealer <= self.total and self.bust == 0):
+            self.dealer.append(self.cards.pop() + random.choice(self.symbol))
+            self.totalDealer = self.sum(self.dealer)
+            self.checkBoard()
 
     def clean(self):
         self.cards = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'] * 4
@@ -81,16 +84,38 @@ class blackJack:
         self.done = 0
         self.isACE = 0
 
+    # client = discord.Client()
+    # @client.command()
+    # async def ctt(ctx):
+    #     embed = discord.Embed(title="BlackJack", color=0xe60a0a)
+    #     embed.set_thumbnail(
+    #         url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+    #     embed.add_field(name="Dealer", value=self.dealer, inline=False)
+    #     embed.add_field(name="Player", value=self.player, inline=False)
+    #     embed.set_footer(text="Enter &H to Hit or &S to Stand")
+    #     await self.message.channel.send(embed=embed)
     def checkBoard(self):
-        print("DEALER: ")
+        output = ''
+        output += 'DEALER: \n'
         for i in self.dealer:
-            print(i,end=" ")
-        print("")
-        print("PLAYER: ")
+            output += i
+            output += ' | '
+        output += '\n'
+        output += 'PLAYER: \n'
         for i in self.player:
-            print(i,end=" ")
-        print("")
-        print("")
+            output += i
+            output += ' | '
+        output += '\n\n'
+        # print("DEALER: ")
+        # for i in self.dealer:
+        #     print(i,end=" ")
+        # print("")
+        # print("PLAYER: ")
+        # for i in self.player:
+        #     print(i,end=" ")
+        # print("")
+        # print("")
+        return output
 
     def sum(self,arr):
         sum = 0
@@ -113,9 +138,9 @@ class blackJack:
 
         return (sum)
 
-print("WELCOME TO BLACKJACK")
-game = blackJack()
-game.start()
-game.checkBoard()
-game.choice()
-game.result()
+# print("WELCOME TO BLACKJACK")
+# game = blackJack()
+# game.start()
+# game.checkBoard()
+# game.choice()
+# game.result()
