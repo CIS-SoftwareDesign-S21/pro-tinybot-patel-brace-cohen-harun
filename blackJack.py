@@ -12,6 +12,7 @@ class blackJack:
         self.total = 0
         self.totalDealer = 0
         self.done = 0
+        self.isACE = 0
 
     def start(self):
         random.shuffle(self.cards)
@@ -43,7 +44,7 @@ class blackJack:
             print("PLAYER LOSE")
             return 0
         self.totalDealer = self.sum(self.dealer)
-        while(self.totalDealer < 21 and self.totalDealer < self.total and self.bust == 0 and self.totalDealer != self.total):
+        while(self.totalDealer < 21 and self.totalDealer <= self.total and self.bust == 0):
             self.dealer.append(self.cards.pop() + random.choice(self.symbol))
             self.totalDealer = self.sum(self.dealer)
             self.checkBoard()
@@ -78,6 +79,7 @@ class blackJack:
         self.total = 0
         self.totalDealer = 0
         self.done = 0
+        self.isACE = 0
 
     def checkBoard(self):
         print("DEALER: ")
@@ -97,12 +99,17 @@ class blackJack:
                 sum = sum + 10
             elif(arr[i][0] == 'A'):
                 sum = sum + 1
-                if (sum + 10 <= 21):
-                    sum = sum + 10
+                self.isACE = self.isACE + 1
             elif(arr[i][:2] == '10'):
                 sum = sum + 10
             else:
                 sum = sum + int(arr[i][0])
+        while(self.isACE):
+            print("ACE HERE")
+            if (sum + 10 <= 21):
+                sum = sum + 10
+                print("ACE CHANGED")
+            self.isACE = self.isACE - 1
 
         return (sum)
 
