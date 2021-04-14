@@ -1,14 +1,18 @@
 import random
+
 class blackJack:
-    cards = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']*4
-    symbol = ['♠','♣','♥','♦']
-    player = []
-    dealer = []
-    bust = 0
-    total = 0
-    totalDealer = 0
-    done = 0
-    isACE = 0
+    symbol = ['♠', '♣', '♥', '♦']
+
+    def __init__(self):
+        self.cards = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'] * 4
+        # self.symbol = ['♠', '♣', '♥', '♦']
+        self.player = []
+        self.dealer = []
+        self.bust = 0
+        self.total = 0
+        self.totalDealer = 0
+        self.done = 0
+
     def start(self):
         random.shuffle(self.cards)
         self.dealer.append(self.cards.pop() + random.choice(self.symbol))
@@ -19,15 +23,15 @@ class blackJack:
     def choice(self):
         self.total = self.sum(self.player)
         while(self.done == 0):
-            playerChoice = input("HIT OR STAND: ")
-            if(playerChoice == "HIT"):
+            playerChoice = input("Enter H to Hit or S to Stand :")
+            if(playerChoice == "H"):
                 self.player.append(self.cards.pop() + random.choice(self.symbol))
                 self.total = self.sum(self.player)
                 if(self.total > 21):
                     self.done = 1
                     self.bust = 1
                 self.checkBoard()
-            elif(playerChoice == "STAND"):
+            elif(playerChoice == "S"):
                 self.total = self.sum(self.player)
                 self.done = 1
             else:
@@ -67,13 +71,13 @@ class blackJack:
             return 1
 
     def clean(self):
+        self.cards = ['A', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K'] * 4
         self.player = []
         self.dealer = []
         self.bust = 0
         self.total = 0
         self.totalDealer = 0
         self.done = 0
-        self.isACE = 0
 
     def checkBoard(self):
         print("DEALER: ")
