@@ -1,6 +1,6 @@
 import random
 class blackJack:
-    cards = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']
+    cards = ['A','2','3','4','5','6','7','8','9','10','J','Q','K']*4
     symbol = ['♠','♣','♥','♦']
     player = []
     dealer = []
@@ -8,22 +8,27 @@ class blackJack:
     total = 0
     totalDealer = 0
     done = 0
+    isACE = 0
     def start(self):
+        random.shuffle(self.cards)
+        self.dealer.append(self.cards.pop() + random.choice(self.symbol))
         for i in range (0,2):
-            self.player.append(random.choice(self.cards) + random.choice(self.symbol))
-            self.dealer.append(random.choice(self.cards) + random.choice(self.symbol))
+            self.player.append(self.cards.pop() + random.choice(self.symbol))
+
 
     def choice(self):
+        self.total = self.sum(self.player)
         while(self.done == 0):
             playerChoice = input("HIT OR STAND: ")
             if(playerChoice == "HIT"):
-                self.player.append(random.choice(self.cards) + random.choice(self.symbol))
+                self.player.append(self.cards.pop() + random.choice(self.symbol))
                 self.total = self.sum(self.player)
                 if(self.total > 21):
                     self.done = 1
                     self.bust = 1
                 self.checkBoard()
             elif(playerChoice == "STAND"):
+                self.total = self.sum(self.player)
                 self.done = 1
             else:
                 print("WRONG INPUT")
@@ -34,15 +39,22 @@ class blackJack:
             print("PLAYER LOSE")
             return 0
         self.totalDealer = self.sum(self.dealer)
-        while(self.totalDealer < 21 and self.totalDealer < self.total and self.bust == 0):
-            self.dealer.append(random.choice(self.cards) + random.choice(self.symbol))
+        while(self.totalDealer < 21 and self.totalDealer < self.total and self.bust == 0 and self.totalDealer != self.total):
+            self.dealer.append(self.cards.pop() + random.choice(self.symbol))
             self.totalDealer = self.sum(self.dealer)
             self.checkBoard()
-            if(self.totalDealer > 21):
-                print("DEALER BUST!")
-                print("PLAYER WIN")
-                return 1
+        if(len(self.player) > 4 and self.total<=21):
+            print("5 CARDS")
+            print("PLAYER WIN")
+        if(self.totalDealer > 21):
+            print("DEALER BUST!")
+            print("PLAYER WIN")
+            return 1
         if(self.total < self.totalDealer):
+            self.totalDealer = self.sum(self.dealer)
+            self.total = self.sum(self.player)
+            print("DEALER HAVE: ", self.totalDealer)
+            print("PLAYER HAVE: ", self.total)
             print("PLAYER LOSE")
             return 0
         elif(self.total == self.totalDealer):
@@ -61,6 +73,7 @@ class blackJack:
         self.total = 0
         self.totalDealer = 0
         self.done = 0
+        self.isACE = 0
 
     def checkBoard(self):
         print("DEALER: ")
@@ -71,6 +84,7 @@ class blackJack:
         for i in self.player:
             print(i,end=" ")
         print("")
+        print("")
 
     def sum(self,arr):
         sum = 0
@@ -79,8 +93,13 @@ class blackJack:
                 sum = sum + 10
             elif(arr[i][0] == 'A'):
                 sum = sum + 1
+                if (sum + 10 <= 21):
+                    sum = sum + 10
+            elif(arr[i][:2] == '10'):
+                sum = sum + 10
             else:
                 sum = sum + int(arr[i][0])
+
         return (sum)
 
 print("WELCOME TO BLACKJACK")
