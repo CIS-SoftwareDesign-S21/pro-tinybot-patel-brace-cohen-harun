@@ -21,13 +21,13 @@ def getUserFromMention(opponent):
 
 def goodbyeMessage(goodbye):
     # goodbye = discord.Embed()
-    goodbye.title("Thank you for playing!")
+    goodbye.title = 'Thank you for playing!'
     # goodbye.title("Consider Playing These Games Next!")
     # goodbye.add_field(name="Tic_Tac_Toe", value = "use \"ttt @user\" to start a game!", inline=True)
     # goodbye.add_field(name="Chess", value="use \"chess\" to start a game!", inline=True)
     # goodbye.add_field(name="Coin Flip", value="use \"$coin\" to flip a coin!", inline=True)
     # goodbye.add_field(name="BattleShip", value="use \"battleship\" to start a game!", inline=True)
-    return goodbye
+    #return goodbye
 
 @client.event
 async def on_ready():
@@ -77,8 +77,8 @@ async def on_message(message):
                     # Im doing something wrong here because it won't print the embed
                     if game.checkWin == True: 
                         goodbye = discord.Embed()
-                        goodbye = goodbyeMessage(goodbye)
-                        await message.channel.send(goodbye=goodbye)
+                        goodbyeMessage(goodbye)
+                        await message.channel.send(embed=goodbye)
                 else:
                     await message.channel.send("<@!" + str(game.user) + "> it's not your turn!")
             elif message.author.id == game.opponent:
@@ -86,8 +86,8 @@ async def on_message(message):
                     await message.channel.send(game.makeMove(message.content[1:]))
                     if game.checkWin == True:
                         goodbye = discord.Embed()
-                        goodbye = goodbyeMessage(goodbye)
-                        await message.channel.send(goodbye=goodbye)
+                        goodbyeMessage(goodbye)
+                        await message.channel.send(embed=goodbye)
                 else:
                     await message.channel.send("<@!" + str(game.opponent) + "> it's not your turn!")
             else:
