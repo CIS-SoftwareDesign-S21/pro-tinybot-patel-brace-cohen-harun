@@ -122,30 +122,47 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
     print(user)
 
     # Instantiate the Game unless a Move is being Played
-    global game
-    opponent = user.id
+    if not isinstance(user, str):
+        global game
+        opponent = user.id
 
-    # For Testing Purposes
-    #print(opponent) 
+        # For Testing Purposes
+        #print(opponent) 
 
-    userTurn = True
-    checkWin = False
-    gameEnd = False
-    checkTie = False
-    game = TicTacToeGame(int(ctx.author.id), int(opponent), bool(userTurn), bool(checkWin), bool(gameEnd), bool(checkTie))
-    game.clearBoard()
-    await ctx.send('Tic-Tac-Toe game started!\nEnter #\'Location\' to Move')
-    await ctx.send('Example: #A1')
-    await ctx.send(game.initBoard())
-    await ctx.send(f"{ctx.author.mention}, Make your move!")
+        userTurn = True
+        checkWin = False
+        gameEnd = False
+        checkTie = False
+        game = TicTacToeGame(int(ctx.author.id), int(opponent), bool(userTurn), bool(checkWin), bool(gameEnd), bool(checkTie))
+        game.clearBoard()
+        await ctx.send('Tic-Tac-Toe game started!\nEnter #\'Location\' to Move')
+        await ctx.send('Example: #A1')
+        await ctx.send(game.initBoard())
+        await ctx.send(f"{ctx.author.mention}, Make your move!")
+
+    move = user
+    print(move)
 
     # Make the Move Given
-    if not user:
-        if not game.gameEnd:
-
-            move = ctx.message.content[5:]
-            print(move)
-            await ctx.send(game.makeMove(move))
+    if not game.gameEnd:
+        if ctx.author.id == game.user:
+            if game.userTurn == True:
+                await ctx.send(game.makeMove(move))
+                if game.checkWin == True:
+                    await ctx.send(f"{ctx.author.mention} Won!")
+            else:
+                await ctx.send(f"{ctx.author.mention}, it's not your turn!")
+        elif ctx.author.id == game.opponent:
+            if game.userTurn == False:
+                await ctx.send(game.makeMove(move))
+                if game.checkWin == True:
+                    await ctx.send(f"{ctx.author.mention} Won!")
+            else:
+                await ctx.send(f"{ctx.author.mention}, it's not your turn!")
+        else:
+            await ctx.send("Didn't recognize player!")
+    else:
+        await ctx.send("Start a Tic-Tac-Toe game to make a move!")
 
     return
 
