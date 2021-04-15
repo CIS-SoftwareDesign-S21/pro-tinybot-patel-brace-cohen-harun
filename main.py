@@ -5,6 +5,7 @@ from tic_tac_toe import TicTacToeGame
 from battleShip import BattleShipGame
 from coinflip import coinflip
 from microchess import MicrochessGame
+from connect4 import Connect4Game
 
 
 user = ""
@@ -16,6 +17,7 @@ checkTie = False
 game: TicTacToeGame = TicTacToeGame(user, opponent, userTurn, checkWin, gameEnd, checkTie)
 game2: BattleShipGame = BattleShipGame()
 chessGame: MicrochessGame = None
+connect4Game: Connect4Game = None
 
 client = discord.Client()
 
@@ -140,5 +142,12 @@ async def on_message(message):
     elif message.content.startswith('#'):
         await message.channel.send(game2.makeMove(message.content[1:]))
 
+    elif message.content.startswith('c4'):
+        global connect4Game
+        connect4Game = Connect4Game()
+        await message.channel.send(connect4Game.initBoard())
+        await message.channel.send('Connect 4 game started!')
+    elif message.content.startswith('-'):
+        await message.channel.send(connect4Game.makeMove(message.content[1:]))
 
 client.run('ODIzOTIyODMwOTI4Mzc5OTI0.YFn37g.qBiNOnlxbAgc7n4jfu9GQi2dkQk')
