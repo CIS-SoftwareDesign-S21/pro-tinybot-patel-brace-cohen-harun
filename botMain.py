@@ -35,6 +35,17 @@ gameDictionary = {
 
 }
 
+# Function to Display a Goodbye Message for when a Game Ends
+def goodbyeMessage():
+
+    # Embed an Image
+    goodbye = discord.Embed()
+
+    # Define the Variables
+    goodbye.title = "Thank you for playing!"
+
+    return goodbye
+
 # Once Bot is Logged In and Ready on Discord Server Notification
 @client.event
 async def on_ready():
@@ -118,16 +129,13 @@ async def coinf(ctx):
 #async def ttt(ctx, *, user: discord.User):
 async def ttt(ctx, user: typing.Union[discord.User, str]):
 
-    # Testing Purposes
-    print(user)
-
     # Instantiate the Game unless a Move is being Played
     if not isinstance(user, str):
         global game
         opponent = user.id
 
         # For Testing Purposes
-        #print(opponent) 
+        print(opponent) 
 
         userTurn = True
         checkWin = False
@@ -139,30 +147,29 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
         await ctx.send('Example: #A1')
         await ctx.send(game.initBoard())
         await ctx.send(f"{ctx.author.mention}, Make your move!")
-
-    move = user
-    print(move)
-
     # Make the Move Given
-    if not game.gameEnd:
-        if ctx.author.id == game.user:
-            if game.userTurn == True:
-                await ctx.send(game.makeMove(move))
-                if game.checkWin == True:
-                    await ctx.send(f"{ctx.author.mention} Won!")
-            else:
-                await ctx.send(f"{ctx.author.mention}, it's not your turn!")
-        elif ctx.author.id == game.opponent:
-            if game.userTurn == False:
-                await ctx.send(game.makeMove(move))
-                if game.checkWin == True:
-                    await ctx.send(f"{ctx.author.mention} Won!")
-            else:
-                await ctx.send(f"{ctx.author.mention}, it's not your turn!")
-        else:
-            await ctx.send("Didn't recognize player!")
     else:
-        await ctx.send("Start a Tic-Tac-Toe game to make a move!")
+        move = user
+        print(move)
+        if not game.gameEnd:
+            if ctx.author.id == game.user:
+                if game.userTurn == True:
+                    await ctx.send(game.makeMove(move))
+                    if game.checkWin == True:
+                        await ctx.send(embed = goodbyeMessage())
+                else:
+                    await ctx.send(f"{ctx.author.mention}, it's not your turn!")
+            elif ctx.author.id == game.opponent:
+                if game.userTurn == False:
+                    await ctx.send(game.makeMove(move))
+                    if game.checkWin == True:
+                        await ctx.send(embed = goodbyeMessage())
+                else:
+                    await ctx.send(f"{ctx.author.mention}, it's not your turn!")
+            else:
+                await ctx.send("Didn't recognize player!")
+        else:
+            await ctx.send("Start a Tic-Tac-Toe game to make a move!")
 
     return
 
