@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import json
 import asyncio
+import typing
 import os
 
 from coinflip import coinflip
@@ -114,7 +115,11 @@ async def coinf(ctx):
 
 # Command to Play the Tic-Tac-Toe Minigame
 @client.command()
-async def ttt(ctx, *, user: discord.User):
+#async def ttt(ctx, *, user: discord.User):
+async def ttt(ctx, user: typing.Union[discord.User, str]):
+
+    # Testing Purposes
+    print(user)
 
     # Instantiate the Game unless a Move is being Played
     global game
@@ -137,6 +142,7 @@ async def ttt(ctx, *, user: discord.User):
     # Make the Move Given
     if not user:
         if not game.gameEnd:
+
             move = ctx.message.content[5:]
             print(move)
             await ctx.send(game.makeMove(move))
@@ -193,6 +199,10 @@ async def battleship(ctx, message=None):
     await ctx.send(battleshipGame.makeMove(move))
 
     return
+
+
+# Error Handler if Invited User Doesn't exist for Tic-Tac-Toe ################################################################
+
 
 # Command to Create User ID in Leaderboard
 @client.command()
