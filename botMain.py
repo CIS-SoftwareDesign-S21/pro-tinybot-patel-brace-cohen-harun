@@ -225,7 +225,7 @@ async def battleship(ctx, message=None):
     return
 
 
-# Error Handler if Invited User Doesn't exist for Tic-Tac-Toe ################################################################
+# Error Handlers Here ######################################################
 
 
 # Command to Create User ID in Leaderboard
