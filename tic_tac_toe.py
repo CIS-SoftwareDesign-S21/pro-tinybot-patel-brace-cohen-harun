@@ -55,24 +55,24 @@ class TicTacToeGame:
         victoryStatus = str(self.checkForVictory())
         if(victoryStatus != 'None'):
             if(self.userTurn == True):
-                return output + "\n<@!" + str(self.user) + ">, Wins!"
+                return output + "\n\n<@!" + str(self.user) + ">, Wins!"
             else:
-                return output + "\n<@!" + str(self.opponent) + ">, Wins!"
+                return output + "\n\n<@!" + str(self.opponent) + ">, Wins!"
 
         # Check if tie
         self.squaresFilled += 1
         if self.squaresFilled == 9 and not "win" in victoryStatus:
             self.checkTie = True
             self.gameEnd = True
-            return output + '\nIt\'s a tie!'
+            return output + '\n\nIt\'s a tie!'
 
         # Change turns and announce whose turn it is
         if self.userTurn == True:
             self.userTurn = False
-            output = output + "\n<@!" + str(self.opponent) + ">, Make your move!"
+            output = output + "\n\n<@!" + str(self.opponent) + ">, Make your move!"
         else:
             self.userTurn = True
-            output = output + "\n<@!" + str(self.user) + ">, Make your move!"
+            output = output + "\n\n<@!" + str(self.user) + ">, Make your move!"
 
         # Change the sign after taking a turn
         if self.turn == '⭕':
@@ -83,7 +83,7 @@ class TicTacToeGame:
         if victoryStatus == 'None':
             return output
 
-        return output + '\n\n' + victoryStatus
+        return output
 
     def initBoard(self):
         output: str = '\n'
