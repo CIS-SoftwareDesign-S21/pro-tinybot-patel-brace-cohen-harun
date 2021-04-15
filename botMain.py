@@ -263,4 +263,15 @@ async def newUser(ctx):
     return
 
 
+# Command to Display the Leaderboard
+@client.command()
+async def leaderboard(ctx):
+
+    lb = leaderb()
+
+    lb.displayLeaderboard()
+
+    return
+
+
 client.run(bot_info['token'])   
