@@ -30,18 +30,17 @@ class TicTacToeGame:
             or ( self.board[0][j] != '⬜' and self.board[0][j] == self.board[1][j] and self.board[1][j] == self.board[2][j]  ):
                 self.checkWin = True
                 self.gameEnd = True
-                return ''.join( '%s wins!' % self.turn )
+                return ''.join( '%s' % self.turn )
 
         #victory by diagonal  top left-> bottom right, or diagonal top right -> bottom left
         if (self.board[0][0] != '⬜' and self.board[0][0] == self.board[1][1] and self.board[1][1] == self.board[2][2]) \
         or (self.board[0][2] != '⬜' and self.board[0][2] == self.board[1][1] and self.board[1][1] == self.board[2][0]):
             self.checkWin = True
             self.gameEnd = True
-            return ''.join('%s wins!' % self.turn)
+            return ''.join('%s' % self.turn)
 
 
-    def makeMove(self, move ) -> str:
-
+    def makeMove(self, move) -> str:
         try: #accept move from player; ask again if input is not correct
             if self.board[ int( move[1] ) - 1][ self.columnIDs.index( move[0].upper() ) ] == '⬜':
                 self.board[ int( move[1] ) - 1][ self.columnIDs.index( move[0].upper() ) ] = self.turn
@@ -52,16 +51,30 @@ class TicTacToeGame:
             return 'Error: Please input special key \'^\', followed by letter A,B, or C to select column, and integer 1-3 to select row.'
         output = self.initBoard()
 
+        # Check if the user or opponent won and announce it
         victoryStatus = str(self.checkForVictory())
+        if(victoryStatus != 'None'):
+            if(self.userTurn == True):
+                return output + "\n\n<@!" + str(self.user) + ">, Wins!"
+            else:
+                return output + "\n\n<@!" + str(self.opponent) + ">, Wins!"
 
-        #check if tie
+        # Check if tie
         self.squaresFilled += 1
         if self.squaresFilled == 9 and not "win" in victoryStatus:
             self.checkTie = True
             self.gameEnd = True
             return output + '\n\nIt\'s a tie!'
 
+        # Change turns and announce whose turn it is
+        if self.userTurn == True:
+            self.userTurn = False
+            output = output + "\n\n<@!" + str(self.opponent) + ">, Make your move!"
+        else:
+            self.userTurn = True
+            output = output + "\n\n<@!" + str(self.user) + ">, Make your move!"
 
+        # Change the sign after taking a turn
         if self.turn == '⭕':
             self.turn = '❌'
         else:
@@ -70,11 +83,11 @@ class TicTacToeGame:
         if victoryStatus == 'None':
             return output
 
-        return output + '\n\n' + victoryStatus
+        return output
 
     def initBoard(self):
         output: str = '\n'
-        # create text representation of board
+        # Create text representation of board
         output += ("%s" % ':hash: ')
         output += ("%s" % ':regional_indicator_a:  ')
         output += ('%6s' % ':regional_indicator_b:  ')
