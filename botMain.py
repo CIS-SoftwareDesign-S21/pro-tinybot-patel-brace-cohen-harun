@@ -11,6 +11,8 @@ from microchess import MicrochessGame
 from battleShip import BattleShipGame
 from leaderboard_impl import leaderb
 
+game : TicTacToeGame = None
+
 # Bot Takes Token, ClientID, and Permissions from JSON File
 bot_info_file = open("token.json")
 bot_info = json.load(bot_info_file)
@@ -133,18 +135,15 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
     if not isinstance(user, str):
         global game
         opponent = user.id
-
-        # For Testing Purposes
-        print(opponent) 
-
         userTurn = True
         checkWin = False
         gameEnd = False
         checkTie = False
         game = TicTacToeGame(int(ctx.author.id), int(opponent), bool(userTurn), bool(checkWin), bool(gameEnd), bool(checkTie))
         game.clearBoard()
-        await ctx.send('Tic-Tac-Toe game started!\nEnter #\'Location\' to Move')
-        await ctx.send('Example: #A1')
+        start = discord.Embed(title="Tic-Tac-Toe Game Started!",
+                              description="Enter $ttt \'Location\' To Make A Move\nExample: $ttt a1", color=15158332)
+        await ctx.send(embed=start)
         await ctx.send(game.initBoard())
         await ctx.send(f"{ctx.author.mention}, Make your move!")
     # Make the Move Given
