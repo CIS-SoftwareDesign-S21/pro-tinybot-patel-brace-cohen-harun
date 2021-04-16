@@ -184,22 +184,23 @@ async def chess(ctx, message=None):
         chessGame = MicrochessGame()
         path = chessGame.genBoardImage()
         await ctx.send(file=discord.File(path))
-        await ctx.send('A chess game has started!\nWhite, it\'s your move.')
-        await ctx.send('Enter * followed by a letter for your piece: P - Pawn, B- Bishop, K - Knight, R - Rook, S - King')
-        await ctx.send('Piece ID should be followed by Column and Row ID')
-        await ctx.send('For example, *KB3 is a good opening move.')
+        await ctx.send('A chess game has started!\nWhite, it\'s your move.\n' +
+            'Enter * followed by a letter for your piece: P - Pawn, B- Bishop, K - Knight, R - Rook, S - King\n' +
+            'Piece ID should be followed by Column and Row ID\n' +
+            'For example, \'$chess KB3\' is a good opening move.')
 
-    # Make the Move Given
-    move = ctx.message.content[7:]
-    
-    # For Testing Purposes
-    print(move)
+    else:
+        # Make the Move Given
+        move = ctx.message.content[7:]
 
-    updateMessage, playerMoved = chessGame.makeMove(move)
-    if playerMoved:
-        path = chessGame.genBoardImage()
-        await ctx.send(file=discord.File(path))
-    await ctx.send(updateMessage)
+        # For Testing Purposes
+        print(move)
+
+        updateMessage, playerMoved = chessGame.makeMove(move)
+        if playerMoved:
+            path = chessGame.genBoardImage()
+            await ctx.send(file=discord.File(path))
+        await ctx.send(updateMessage)
 
     return
 
