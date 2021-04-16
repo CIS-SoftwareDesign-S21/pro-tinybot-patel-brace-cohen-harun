@@ -7,15 +7,8 @@ from coinflip import coinflip
 from microchess import MicrochessGame
 from connect4 import Connect4Game
 
-
-user = ""
-opponent = ""
-userTurn = True
-checkWin = False
-gameEnd = False
-checkTie = False
-game: TicTacToeGame = TicTacToeGame(user, opponent, userTurn, checkWin, gameEnd, checkTie)
-game2: BattleShipGame = BattleShipGame()
+game: TicTacToeGame = None
+game2: BattleShipGame = None
 chessGame: MicrochessGame = None
 connect4Game: Connect4Game = None
 
@@ -27,6 +20,16 @@ def getUserFromMention(opponent):
         if opponent.startswith('!'):
             opponent = opponent[1:]
     return opponent
+
+def goodbyeMessage():
+    goodbye = discord.Embed()
+    goodbye.title = 'Thank you for playing!'
+    # goodbye.title("Consider Playing These Games Next!")
+    # goodbye.add_field(name="Tic_Tac_Toe", value = "use \"ttt @user\" to start a game!", inline=True)
+    # goodbye.add_field(name="Chess", value="use \"chess\" to start a game!", inline=True)
+    # goodbye.add_field(name="Coin Flip", value="use \"$coin\" to flip a coin!", inline=True)
+    # goodbye.add_field(name="BattleShip", value="use \"battleship\" to start a game!", inline=True)
+    return goodbye
 
 @client.event
 async def on_ready():
@@ -41,16 +44,16 @@ async def on_message(message):
     # Simple Bot commands
     if message.content.startswith('$hello'):
         await message.channel.send('Hello!')
-    elif message.content.startswith( 'i am' ):
-        await message.channel.send( 'Hello, ' + message.content.split( ' ' )[2] )
+    elif message.content.startswith('i am'):
+        await message.channel.send('Hello, ' + message.content.split(' ')[2])
 
     # Shutdown the bot
-    elif message.content.startswith( '$bye' ):
+    elif message.content.startswith('$bye'):
         await message.channel.send('Bye!')
         await client.logout()
         await client.close()
 
-    #Handles the start of a Tic-Tac-Toe game with invite function
+    # Handles the start of a Tic-Tac-Toe game with invite function
     elif message.content.startswith('ttt <@'):
         opponent = message.content.replace('ttt ', '')
         opponent = getUserFromMention(opponent)
@@ -62,40 +65,29 @@ async def on_message(message):
         game = TicTacToeGame(int(message.author.id),
                              int(opponent), bool(userTurn), bool(checkWin), bool(gameEnd), bool(checkTie))
         game.clearBoard()
-        await message.channel.send('Tic-Tac-Toe game started!\nEnter #\'Location\' to Move')
-        await message.channel.send('Example: #A1')
+        await message.channel.send('Tic-Tac-Toe game started!\nEnter ^\'Location\' to Move')
+        await message.channel.send('Example: ^A1')
         await message.channel.send(game.initBoard())
         await message.channel.send("<@!" + str(game.user) + ">, Make your move!")
 
-    # Handels making moves in Tic-Tac-Toe game
+    # Handles making moves in Tic-Tac-Toe game
     elif message.content.startswith('^'):
-        if(not game.gameEnd):
+        if not game.gameEnd:
             if message.author.id == game.user:
                 if game.userTurn == True:
-                    validMove = game.makeMove(message.content[1:])
-                    if "Error" in validMove:
-                        await message.channel.send(validMove)
-                    else:
-                        await message.channel.send(validMove)
-                        game.userTurn = False
-                        if game.checkWin == False and game.checkTie == False:
-                            await message.channel.send("<@!" + str(game.opponent) + ">, Make your move!")
-                        elif game.checkWin == True:
-                            await message.channel.send("<@!" + str(game.user) + ">, Wins!")
+                    await message.channel.send(game.makeMove(message.content[1:]))
+                    # Im doing something wrong here because it won't print the embed
+                    if game.checkWin == True: 
+                        goodbye = goodbyeMessage()
+                        await message.channel.send(embed=goodbye)
                 else:
                     await message.channel.send("<@!" + str(game.user) + "> it's not your turn!")
             elif message.author.id == game.opponent:
                 if game.userTurn == False:
-                    validMove = game.makeMove(message.content[1:])
-                    if "Error" in validMove:
-                        await message.channel.send(validMove)
-                    else:
-                        await message.channel.send(validMove)
-                        game.userTurn = True
-                        if game.checkWin == False and game.checkTie == False:
-                            await message.channel.send("<@!" + str(game.user) + ">, Make your move!")
-                        elif game.checkWin == True:
-                            await message.channel.send("<@!" + str(game.opponent) + ">, Wins!")
+                    await message.channel.send(game.makeMove(message.content[1:]))
+                    if game.checkWin == True:
+                        goodbye = goodbyeMessage()
+                        await message.channel.send(embed=goodbye)
                 else:
                     await message.channel.send("<@!" + str(game.opponent) + "> it's not your turn!")
             else:
@@ -105,7 +97,7 @@ async def on_message(message):
             await message.channel.send("Start a Tic-Tac-Toe game to make a move!")
 
     # Handles Coin flip game
-    elif message.content.startswith( '$coin' ):
+    elif message.content.startswith('$coin'):
         embed = discord.Embed()
         result = coinflip()
         # embed.title = result
@@ -115,8 +107,8 @@ async def on_message(message):
         else:
             embed.set_image(
                 url="https://media1.tenor.com/images/51e09c7f9e8051ab944f0aaeed426e80/tenor.gif?itemid=20771732")
-        await message.channel.send(embed = embed)
-    elif message.content.startswith( '$how are you' ):
+        await message.channel.send(embed=embed)
+    elif message.content.startswith('$how are you'):
         await message.channel.send('I am good! Thank you for asking')
     elif message.content.startswith('chess'):
         global chessGame
@@ -135,7 +127,7 @@ async def on_message(message):
         await message.channel.send(updateMessage)
 
     elif message.content.startswith('battleship'):
-        global game2  
+        global game2
         game2 = BattleShipGame()
         await message.channel.send('BattleShip game started!')
 
