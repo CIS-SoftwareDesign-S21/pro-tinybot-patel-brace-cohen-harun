@@ -131,8 +131,12 @@ class MicrochessGame:
                 self.players[self.turn]['P'] = None
                 output += '%s has queened their pawn.\n' % self.playerNames[self.turn]
 
+            #if opp. king is in check, add to message
+            if self.isInCheck():
+                output += 'King is in Check. '
+
             self.changeTurn()
-            output += "%s\'s move!" % self.playerNames[self.turn]
+            output += '%s\'s move!' % self.playerNames[self.turn]
             return output, True
         else:
             output += 'This is an invalid move.'
@@ -190,3 +194,27 @@ class MicrochessGame:
                 if self.board[i][j] == self.players[self.turn][c]:
                     return i, j
         return None, None
+
+    def isInCheck(self):
+        #get opponenents king and his coordinates
+        if self.turn == 0:
+            defending = 1
+        else:
+            defending = 0
+        kx = -1
+        ky = -1
+
+        for i in range(0, 5):
+            for j in range(0, 4):
+                if self.board[i][j] != None and self.board[i][j].color == defending  and self.board[i][j].initial == 'S':
+                    kx = i
+                    ky = j
+
+        #for each piece on side that just moved, ID any check condition(s)
+        for i in range(0, 5):
+            for j in range(0, 4):
+                if self.board[i][j] != None and self.board[i][j].color == self.turn:
+                    if self.board[i][j].canMakeMove( i, j, kx, ky, self.board ):
+                        return True
+
+        return False

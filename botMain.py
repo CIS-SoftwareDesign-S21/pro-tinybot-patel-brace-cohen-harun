@@ -31,8 +31,8 @@ gameDictionary = {
     "Hello" : "hello",
     "Mood" : "mood",
     "Coinflip" : "coinf",
-    "Tic-Tac-Toe" : "ttt"
-
+    "Tic-Tac-Toe" : "ttt",
+    "Chess" : "ch"
 }
 
 # Function to Display a Goodbye Message for when a Game Ends
@@ -63,7 +63,7 @@ async def games(ctx):
 
     # Appends all Available Commands/Games to Play to a String (Acting as a List to Display)
     for game in gameDictionary:
-        gamesList += game + "\n"
+        gamesList += game + ':\t$' + gameDictionary[game] + "\n"
 
     # Sends the List of Available Sounds to Play to the Discord Channel
     await ctx.send(gamesList)
@@ -78,7 +78,7 @@ async def hello(ctx, message=None):
         await ctx.send("Hello!")
         return
 
-    # If Tinyboy was Greeted
+    # If Tinybot was Greeted
     if (message.lower() == "tinybot"):
         await ctx.send(f'Hello, {ctx.author.mention}!')
         return
@@ -176,7 +176,7 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
 
 # Command to Play the MicroChess Minigame
 @client.command()
-async def chess(ctx, message=None):
+async def ch(ctx, message=None):
 
     # Instantiate the Game unless a Move is being Played
     if not message:
@@ -185,9 +185,9 @@ async def chess(ctx, message=None):
         path = chessGame.genBoardImage()
         await ctx.send(file=discord.File(path))
         await ctx.send('A chess game has started!\nWhite, it\'s your move.\n' +
-            'Enter * followed by a letter for your piece: P - Pawn, B- Bishop, K - Knight, R - Rook, S - King\n' +
+            'Enter a letter for your piece: P - Pawn, B- Bishop, K - Knight, R - Rook, S - King, Q - Queen\n' +
             'Piece ID should be followed by Column and Row ID\n' +
-            'For example, \'$chess KB3\' is a good opening move.')
+            'For example, \'$ch KB3\' is a good opening move.')
 
     else:
         # Make the Move Given

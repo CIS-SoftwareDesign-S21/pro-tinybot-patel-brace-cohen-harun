@@ -154,6 +154,13 @@ class King(ChessPiece):
         if super(King, self).canMakeMove( fromRow, fromColumn, toRow, toColumn, board ) == False:
             return False
 
+        #can't put own King into check
+        for i in range(0, 5):
+            for j in range(0, 4):
+                if board[i][j] != None and board[i][j].color != self.color:
+                    if board[i][j].canMakeMove( i, j, toRow, toColumn, board ):
+                        return False
+
         distColumn = abs(fromColumn - toColumn)
         distRow = abs(fromRow - toRow)
         #one space in any direction
