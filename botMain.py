@@ -230,28 +230,53 @@ async def battleship(ctx, message=None):
 
 
 @client.command()
-async def c4(ctx, message=None):
-    if not message:
+async def c4(ctx, user: typing.Union[discord.User, str]):
+    if not isinstance(user, str):
         global connect4Game
-        connect4Game = Connect4Game()
+        opponent = user.id
+        userTurn = True
+        checkWin = False
+        gameEnd = False
+        checkTie = False
+        connect4Game = Connect4Game(int(ctx.author.id), int(opponent), bool(
+            userTurn), bool(checkWin), bool(gameEnd), bool(checkTie))
         start = discord.Embed(title="Connect 4 Game Started!",
                               description="Enter $c4 \'Location\' To Make A Move\nExample: $c4 a", color=15158332)
         await ctx.send(embed=start)
-        msg = await ctx.channel.send(connect4Game.initBoard())
+        await ctx.channel.send(connect4Game.initBoard())
+        await ctx.send(f"{ctx.author.mention}, Make your move!")
+
 
     # Make the Move Given
-    move = ctx.message.content[4:]
-
-    # For Testing Purposes
-    print(move)
-
-    msg = await ctx.send(connect4Game.makeMove(move))
-    reactions = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬']
-    for i in reactions:
-        await msg.add_reaction(i)
+    # msg = await ctx.send(connect4Game.makeMove(move))
+    # reactions = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬']
+    # for i in reactions:
+    #     await msg.add_reaction(i)
+    # Make the Move Given
+    else:
+        move = user
+        print(move)
+        if not connect4Game.gameEnd:
+            if ctx.author.id == connect4Game.user:
+                if connect4Game.userTurn == True:
+                    await ctx.send(connect4Game.makeMove(move))
+                    if connect4Game.checkWin == True:
+                        await ctx.send(embed=goodbyeMessage())
+                else:
+                    await ctx.send(f"{ctx.author.mention}, it's not your turn!")
+            elif ctx.author.id == connect4Game.opponent:
+                if connect4Game.userTurn == False:
+                    await ctx.send(connect4Game.makeMove(move))
+                    if game.checkWin == True:
+                        await ctx.send(embed=goodbyeMessage())
+                else:
+                    await ctx.send(f"{ctx.author.mention}, it's not your turn!")
+            else:
+                await ctx.send("Didn't recognize player!")
+        else:
+            await ctx.send("Start a Connect 4 game to make a move!")
 
     return
-
 
 # Error Handler if Invited User Doesn't exist for Tic-Tac-Toe ################################################################
 

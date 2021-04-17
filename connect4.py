@@ -1,4 +1,13 @@
 class Connect4Game:
+
+    def __init__(self, user, opponent, userTurn, checkWin, gameEnd, checkTie):
+        self.user = user
+        self.opponent = opponent
+        self.userTurn = userTurn
+        self.checkWin = checkWin
+        self.gameEnd = gameEnd
+        self.checkTie = checkTie
+
     ROW = 6
     COL = 7
     board = [ # 6*7 board
@@ -31,11 +40,26 @@ class Connect4Game:
 
         victoryStatus = str(self.checkForVictory())
         if(victoryStatus == self.turn):
-            return output + "\n\n" + victoryStatus + ", Wins!"
+            self.checkWin = True
+            self.gameEnd = True
+            if(self.userTurn == True):
+                return output + "\n\n" + victoryStatus + ", <@!" + str(self.user) + ">, Wins!"
+            else:
+                return output + "\n\n" + victoryStatus + ", <@!" + str(self.opponent) + ">, Wins!"
 
         self.slotsFilled += 1
         if self.slotsFilled == 42:
+            self.gameEnd = True
+            self.checkTie = True
             return output + "\n\nIt's a Tie"
+
+        if self.userTurn == True:
+            self.userTurn = False
+            output = output + "\n\n<@!" + \
+                str(self.opponent) + ">, Make your move!"
+        else:
+            self.userTurn = True
+            output = output + "\n\n<@!" + str(self.user) + ">, Make your move!"
 
         if self.turn == '🔴':
             self.turn = '🔵'
