@@ -9,7 +9,9 @@ from coinflip import coinflip
 from tic_tac_toe import TicTacToeGame
 from microchess import MicrochessGame
 from battleShip import BattleShipGame
+from connect4 import Connect4Game
 from leaderboard_impl import leaderb
+
 
 # Bot Takes Token, ClientID, and Permissions from JSON File
 bot_info_file = open("token.json")
@@ -31,7 +33,9 @@ gameDictionary = {
     "Hello" : "hello",
     "Mood" : "mood",
     "Coinflip" : "coinf",
-    "Tic-Tac-Toe" : "ttt"
+    "Tic-Tac-Toe" : "ttt",
+    "BattleShip" : "battleship",
+    "Connect 4" : "c4",
 
 }
 
@@ -221,6 +225,30 @@ async def battleship(ctx, message=None):
     print(move)
 
     await ctx.send(battleshipGame.makeMove(move))
+
+    return
+
+
+@client.command()
+async def c4(ctx, message=None):
+    if not message:
+        global connect4Game
+        connect4Game = Connect4Game()
+        start = discord.Embed(title="Connect 4 Game Started!",
+                              description="Enter $c4 \'Location\' To Make A Move\nExample: $c4 a", color=15158332)
+        await ctx.send(embed=start)
+        msg = await ctx.channel.send(connect4Game.initBoard())
+
+    # Make the Move Given
+    move = ctx.message.content[4:]
+
+    # For Testing Purposes
+    print(move)
+
+    msg = await ctx.send(connect4Game.makeMove(move))
+    reactions = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬']
+    for i in reactions:
+        await msg.add_reaction(i)
 
     return
 
