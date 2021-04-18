@@ -1,24 +1,26 @@
 class Connect4Game:
 
-    def __init__(self, user, opponent, userTurn, checkWin, gameEnd, checkTie):
+    def __init__(self, user, opponent):
         self.user = user
         self.opponent = opponent
-        self.userTurn = userTurn
-        self.checkWin = checkWin
-        self.gameEnd = gameEnd
-        self.checkTie = checkTie
+        self.userTurn = True
+        self.checkWin = False
+        self.gameEnd = False
+        self.checkTie = False
+        self.board = [  # 6*7 board
+            #  A     B      C     D      E     F      G
+            ['⚪', '⚪', '⚪', '⚪', '⚪', '⚪', '⚪'],  # 0
+            ['⚪', '⚪', '⚪', '⚪', '⚪', '⚪', '⚪'],  # 1
+            ['⚪', '⚪', '⚪', '⚪', '⚪', '⚪', '⚪'],  # 2
+            ['⚪', '⚪', '⚪', '⚪', '⚪', '⚪', '⚪'],  # 3
+            ['⚪', '⚪', '⚪', '⚪', '⚪', '⚪', '⚪'],  # 4
+            ['⚪', '⚪', '⚪', '⚪', '⚪', '⚪', '⚪']  # 5
+        ]
+
 
     ROW = 6
     COL = 7
-    board = [ # 6*7 board
-        #  A     B      C     D      E     F      G
-        ['⚪', '⚪', '⚪', '⚪', '⚪', '⚪', '⚪'], # 0
-        ['⚪', '⚪', '⚪', '⚪', '⚪', '⚪', '⚪'], # 1
-        ['⚪', '⚪', '⚪', '⚪', '⚪', '⚪', '⚪'], # 2
-        ['⚪', '⚪', '⚪', '⚪', '⚪', '⚪', '⚪'], # 3
-        ['⚪', '⚪', '⚪', '⚪', '⚪', '⚪', '⚪'], # 4
-        ['⚪', '⚪', '⚪', '⚪', '⚪', '⚪', '⚪']  # 5
-    ]
+    
 
     columnIds = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
     turn: str = '🔴'

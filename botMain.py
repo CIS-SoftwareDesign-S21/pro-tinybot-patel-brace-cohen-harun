@@ -17,6 +17,8 @@ from leaderboard_impl import leaderb
 bot_info_file = open("token.json")
 bot_info = json.load(bot_info_file)
 
+c4Games = dict()
+
 # Prints out the Invite Link for the Bot
 print("Bot Invite Link: ")
 # print(f"https://discordapp.com/oauth2/authorize?client_id={bot_info['clientid']}&scope=bot&permissions={bot_info['permissions']}")
@@ -101,7 +103,6 @@ async def bye(ctx, message=None):
 # Bot tells you its Mood
 @client.command()
 async def mood(ctx):
-
     await ctx.send('I am good! Thank you for asking!')
     return
 
@@ -232,49 +233,47 @@ async def battleship(ctx, message=None):
 @client.command()
 async def c4(ctx, user: typing.Union[discord.User, str]):
     if not isinstance(user, str):
-        global connect4Game
-        opponent = user.id
-        userTurn = True
-        checkWin = False
-        gameEnd = False
-        checkTie = False
-        connect4Game = Connect4Game(int(ctx.author.id), int(opponent), bool(
-            userTurn), bool(checkWin), bool(gameEnd), bool(checkTie))
+        # Check if the user or opponent is already in a game
+        if not c4Games.get(ctx.author.id) and not c4Games.get(str(user.id)):
+            c4Games[str(ctx.author.id)] = Connect4Game(int(ctx.author.id), int(user.id))
+            c4Games[str(user.id)] = c4Games[f'{ctx.author.id}']
+            print(c4Games)
+        else:
+            error1 = discord.Embed(title="You or the player you invited are already in a game!")
+            await ctx.channel.send(embed = error1)
+            return
+
         start = discord.Embed(title="Connect 4 Game Started!",
                               description="Enter $c4 \'Location\' To Make A Move\nExample: $c4 a", color=15158332)
         await ctx.send(embed=start)
-        await ctx.channel.send(connect4Game.initBoard())
+        await ctx.channel.send(c4Games[str(ctx.author.id)].initBoard())
         await ctx.send(f"{ctx.author.mention}, Make your move!")
 
-
-    # Make the Move Given
-    # msg = await ctx.send(connect4Game.makeMove(move))
-    # reactions = ['🇦', '🇧', '🇨', '🇩', '🇪', '🇫', '🇬']
-    # for i in reactions:
-    #     await msg.add_reaction(i)
-    # Make the Move Given
     else:
         move = user
-        print(move)
-        if not connect4Game.gameEnd:
-            if ctx.author.id == connect4Game.user:
-                if connect4Game.userTurn == True:
-                    await ctx.send(connect4Game.makeMove(move))
-                    if connect4Game.checkWin == True:
-                        await ctx.send(embed=goodbyeMessage())
+        if not c4Games.get(ctx.author.id):
+            if ctx.author.id == c4Games[str(ctx.author.id)].user:
+                if c4Games[str(ctx.author.id)].userTurn == True:
+                    await ctx.send(c4Games[str(ctx.author.id)].makeMove(move))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
-            elif ctx.author.id == connect4Game.opponent:
-                if connect4Game.userTurn == False:
-                    await ctx.send(connect4Game.makeMove(move))
-                    if game.checkWin == True:
-                        await ctx.send(embed=goodbyeMessage())
+
+            elif ctx.author.id == c4Games[str(ctx.author.id)].opponent:
+                if c4Games[str(ctx.author.id)].userTurn == False:
+                    await ctx.send(c4Games[str(ctx.author.id)].makeMove(move))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
-            else:
-                await ctx.send("Didn't recognize player!")
+
+            if c4Games[str(ctx.author.id)].checkWin == True or c4Games[str(ctx.author.id)].checkTie == True:
+                await ctx.send(embed=goodbyeMessage())
+                userId: str = c4Games[str(ctx.author.id)].user
+                opId: str = c4Games[str(ctx.author.id)].opponent
+                del c4Games[f'{userId}']
+                del c4Games[f'{opId}']
+                print(c4Games)
         else:
-            await ctx.send("Start a Connect 4 game to make a move!")
+            error2 = discord.Embed(title = "Start a Connect 4 game to make a move!")
+            await ctx.send(embed = error2)
 
     return
 
