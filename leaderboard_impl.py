@@ -12,7 +12,9 @@ class leaderb:
             lb_data = json.load(lb_file)
             print(lb_data)
 
+            # Get the Array of Information from the Object "users"
             temp = lb_data['users']
+            #print(json.dumps(temp, indent = 4, sort_keys = True)
 
         # Read from the JSON file to Obtain Users
 
