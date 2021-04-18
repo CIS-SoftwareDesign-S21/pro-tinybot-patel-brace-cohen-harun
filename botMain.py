@@ -18,6 +18,7 @@ bot_info_file = open("token.json")
 bot_info = json.load(bot_info_file)
 
 c4Games = dict()
+tttGames = dict()
 
 # Prints out the Invite Link for the Bot
 print("Bot Invite Link: ")
@@ -38,7 +39,6 @@ gameDictionary = {
     "Tic-Tac-Toe" : "ttt",
     "BattleShip" : "battleship",
     "Connect 4" : "c4",
-
 }
 
 # Function to Display a Goodbye Message for when a Game Ends
@@ -115,7 +115,7 @@ async def coinf(ctx):
 
     # Generate Result and Embed Title
     result = coinflip()
-    embedVar.title = result
+    embedVar.title = ctx.author.mention
 
     # Display Appropriate Image
     if result == "HEADS":
@@ -136,46 +136,49 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
 
     # Instantiate the Game unless a Move is being Played
     if not isinstance(user, str):
-        global game
-        opponent = user.id
 
-        # For Testing Purposes
-        print(opponent) 
+        if not tttGames.get(ctx.author.id) and not tttGames.get(str(user.id)):
+            tttGames[str(ctx.author.id)] = TicTacToeGame(int(ctx.author.id), int(user.id))
+            tttGames[str(user.id)] = tttGames[f'{ctx.author.id}']
+            print(tttGames)
+        else:
+            error1 = discord.Embed(
+                title="You or the player you invited are already in a game!")
+            await ctx.channel.send(embed=error1)
+            return
 
-        userTurn = True
-        checkWin = False
-        gameEnd = False
-        checkTie = False
-        game = TicTacToeGame(int(ctx.author.id), int(opponent), bool(userTurn), bool(checkWin), bool(gameEnd), bool(checkTie))
-        game.clearBoard()
-        await ctx.send('Tic-Tac-Toe game started!\nEnter #\'Location\' to Move')
-        await ctx.send('Example: #A1')
-        await ctx.send(game.initBoard())
+        start = discord.Embed(title="Tic-Tac-Toe Game Started!",
+                              description="Enter $ttt \'Location\' To Make A Move\nExample: $ttt a1", color=15158332)
+        await ctx.send(embed=start)
+        await ctx.channel.send(tttGames[str(ctx.author.id)].initBoard())
         await ctx.send(f"{ctx.author.mention}, Make your move!")
-    # Make the Move Given
+
     else:
         move = user
-        print(move)
-        if not game.gameEnd:
-            if ctx.author.id == game.user:
-                if game.userTurn == True:
-                    await ctx.send(game.makeMove(move))
-                    if game.checkWin == True:
-                        await ctx.send(embed = goodbyeMessage())
+        if not tttGames.get(ctx.author.id):
+            if ctx.author.id == tttGames[str(ctx.author.id)].user:
+                if tttGames[str(ctx.author.id)].userTurn == True:
+                    await ctx.send(tttGames[str(ctx.author.id)].makeMove(move))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
-            elif ctx.author.id == game.opponent:
-                if game.userTurn == False:
-                    await ctx.send(game.makeMove(move))
-                    if game.checkWin == True:
-                        await ctx.send(embed = goodbyeMessage())
-                else:
-                    await ctx.send(f"{ctx.author.mention}, it's not your turn!")
-            else:
-                await ctx.send("Didn't recognize player!")
-        else:
-            await ctx.send("Start a Tic-Tac-Toe game to make a move!")
 
+            elif ctx.author.id == tttGames[str(ctx.author.id)].opponent:
+                if tttGames[str(ctx.author.id)].userTurn == False:
+                    await ctx.send(tttGames[str(ctx.author.id)].makeMove(move))
+                else:
+                    await ctx.send(f"{ctx.author.mention}, it's not your turn!")
+
+            if tttGames[str(ctx.author.id)].checkWin == True or tttGames[str(ctx.author.id)].checkTie == True:
+                await ctx.send(embed=goodbyeMessage())
+                userId: str = tttGames[str(ctx.author.id)].user
+                opId: str = tttGames[str(ctx.author.id)].opponent
+                del tttGames[f'{userId}']
+                del tttGames[f'{opId}']
+                print(tttGames)
+        else:
+            error2 = discord.Embed(
+                title="Start a Tic Tac Toe game ($ttt @user) to make a move!")
+            await ctx.send(embed=error2)
     return
 
 
@@ -313,6 +316,5 @@ async def newUser(ctx):
 #        json.dump(temp, file, indent = 4)
 
     return
-
 
 client.run(bot_info['token'])   

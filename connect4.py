@@ -7,6 +7,8 @@ class Connect4Game:
         self.checkWin = False
         self.gameEnd = False
         self.checkTie = False
+        self.turn: str = '🔴'
+        self.slotsFilled = 0
         self.board = [  # 6*7 board
             #  A     B      C     D      E     F      G
             ['⚪', '⚪', '⚪', '⚪', '⚪', '⚪', '⚪'],  # 0
@@ -17,14 +19,10 @@ class Connect4Game:
             ['⚪', '⚪', '⚪', '⚪', '⚪', '⚪', '⚪']  # 5
         ]
 
-
     ROW = 6
     COL = 7
-    
 
     columnIds = ['A', 'B', 'C', 'D', 'E', 'F', 'G']
-    turn: str = '🔴'
-    slotsFilled = 0
 
     def makeMove(self, move) -> str:
         try: 
@@ -32,7 +30,6 @@ class Connect4Game:
                 row = self.getOpenRow(move)
                 print(row)
                 self.board[row][self.columnIds.index(move[0].upper())] = self.turn
-
             else: 
                 return 'Error: This Column is Full.'
         except (IndexError, ValueError):
