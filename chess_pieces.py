@@ -2,11 +2,11 @@ from PIL import Image
 
 class ChessPiece:
 
-    initial: str
+    global initial
     name: str
     global icons
     value: int
-    color: int #0 for white, 1 for black
+    global color #0 for white, 1 for black
 
     def __init__(self, initial: str, name: str, onWhiteIcon: Image, onBlackIcon: Image, value: int, color: int ):
         self.initial = initial
@@ -20,11 +20,9 @@ class ChessPiece:
     def canMakeMove( self, fromRow: int, fromColumn: int, toRow: int, toColumn: int, board ) -> bool:
         if board[toRow][toColumn] != None and board[fromRow][fromColumn].color == board[toRow][toColumn].color:
             return False #can't take own piece
-        #TODO: make illegal to put own king into check
 
     def getCaptured(self):
         return self.value
-
 
 
 class Pawn(ChessPiece):
@@ -140,7 +138,7 @@ class Rook(ChessPiece):
 
             return True
 
-        #not horiztonal or vertical move
+        #not horizontal or vertical move
         return False
 
 
@@ -153,13 +151,6 @@ class King(ChessPiece):
     def canMakeMove( self, fromRow: int, fromColumn: int, toRow: int, toColumn: int, board ) -> bool:
         if super(King, self).canMakeMove( fromRow, fromColumn, toRow, toColumn, board ) == False:
             return False
-
-        #can't put own King into check
-        for i in range(0, 5):
-            for j in range(0, 4):
-                if board[i][j] != None and board[i][j].color != self.color:
-                    if board[i][j].canMakeMove( i, j, toRow, toColumn, board ):
-                        return False
 
         distColumn = abs(fromColumn - toColumn)
         distRow = abs(fromRow - toRow)

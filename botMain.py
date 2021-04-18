@@ -191,10 +191,10 @@ async def ch(ctx, message=None):
 
     else:
         # Make the Move Given
-        move = ctx.message.content[7:]
+        move = ctx.message.content[4:]
 
         # For Testing Purposes
-        print(move)
+        #print(move)
 
         updateMessage, playerMoved = chessGame.makeMove(move)
         if playerMoved:

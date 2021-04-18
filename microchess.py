@@ -1,6 +1,7 @@
 from PIL import Image
 from chess_pieces import *
 import io
+import copy
 
 #Images for border surrounding the chess board
 img_A = Image.open('microchess-assets/BORDER/A.png')
@@ -90,6 +91,10 @@ class MicrochessGame:
         if self.gameCompleted:
             return 'The game is over! Use $chess command to start new game.', False
 
+        if move == 'forf':
+            self.gameCompleted = True
+            return '%s has forfeited! Game over.' % self.playerNames[self.turn], False
+
         try:
             selectedPiece = self.players[self.turn][move[0].upper()]
         except:
@@ -97,13 +102,18 @@ class MicrochessGame:
 
         toColumn: int = int(self.columnIDs.index(move[1].upper()))
         toRow: int = self.rowIDs.index(move[2])
+        fromRow: int
+        fromColumn: int
         fromRow, fromColumn = self.findPiece(move[0].upper())
 
         output = ''
 
         if fromRow == None:
-            output += "This piece has been captured."
+            output += 'This piece has been captured.'
             return output, False
+
+        if self.wouldCauseCheck(int(fromRow), int(fromColumn), int(toRow), int(toColumn)):
+            return 'You can\'t put your own King into Check!', False
 
         #print('Attempting to move %s from (%s, %s) to (%s, %s).' % ( selectedPiece.name, fromRow, fromColumn, toRow, toColumn))
 
@@ -125,7 +135,7 @@ class MicrochessGame:
             self.board[fromRow][fromColumn] = None
 
             #pawns are queened if they reach the end of the board
-            if(self.board[toRow][toColumn] == self.players[self.turn]['P'] and (toRow == 0 or toRow == 4) ):
+            if(self.board[toRow][toColumn].color == self.turn and self.board[toRow][toColumn].initial == 'P' and (toRow == 0 or toRow == 4) ):
                 self.board[toRow][toColumn] = self.queens[self.turn]
                 self.players[self.turn]['Q'] = self.board[toRow][toColumn]
                 self.players[self.turn]['P'] = None
@@ -188,22 +198,24 @@ class MicrochessGame:
         else:
             self.turn = 0
 
+        #print('It is now %s\'s turn.' % self.playerNames[self.turn])
+
     def findPiece(self, c):
         for i in range(len(self.board)):
-            for j in range(len(self.board[i])):
-                if self.board[i][j] == self.players[self.turn][c]:
+            for j in range(len(self.board[i])): #now allows for deep copy in check protection
+                if self.board[i][j] != None and self.board[i][j].color == self.turn and self.board[i][j].initial == c:
                     return i, j
         return None, None
 
     def isInCheck(self):
-        #get opponenents king and his coordinates
+
         if self.turn == 0:
             defending = 1
         else:
             defending = 0
         kx = -1
         ky = -1
-
+        #find (x,y) coord. of defending side's King
         for i in range(0, 5):
             for j in range(0, 4):
                 if self.board[i][j] != None and self.board[i][j].color == defending  and self.board[i][j].initial == 'S':
@@ -213,8 +225,33 @@ class MicrochessGame:
         #for each piece on side that just moved, ID any check condition(s)
         for i in range(0, 5):
             for j in range(0, 4):
-                if self.board[i][j] != None and self.board[i][j].color == self.turn:
+                if self.board[i][j] != None and self.board[i][j].initial != 'S' and self.board[i][j].color == self.turn:
                     if self.board[i][j].canMakeMove( i, j, kx, ky, self.board ):
                         return True
 
         return False
+
+
+    def wouldCauseCheck(self, fromRow: int, fromColumn: int, toRow: int, toColumn: int ):
+        if self.turn == 0:
+            otherPlayer = 1
+        else:
+            otherPlayer = 0
+
+        #if you have nothing left but King, game will let you
+        #move him into check so that game does not freeze
+        if self.playerScores[otherPlayer] > 11:
+            return False
+
+        bCopy = copy.deepcopy(self.board)
+        self.board[toRow][toColumn] = self.board[fromRow][fromColumn]
+        self.board[fromRow][fromColumn] = None
+
+        self.changeTurn()
+        output = False
+        if self.isInCheck():
+            output = True
+
+        self.board = bCopy
+        self.changeTurn()
+        return output
