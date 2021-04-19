@@ -1,5 +1,6 @@
 import discord
 import json
+import pandas as pd
 import os
 
 class leaderb:
@@ -7,27 +8,24 @@ class leaderb:
     # Function to Display the Leaderboard
     def displayLeaderboard(ctx):
 
-        # Open the JSON to be Loaded
+        # Open the JSON to be Loaded and Obtain Users
         with open("leaderboard2.json") as lb_file:
             lb_data = json.load(lb_file)
             print(lb_data)
 
-            for i in lb_data['users']:
-                print(i['user_name'])
-
-            # Get the Array of Information from the Object "users"
-            temp = lb_data['users']
-            print(temp)
-
-        # Read from the JSON file to Obtain Users
-
+#            for i in lb_data['users']:
+#                print(i['user_name'])
 
         # Sort Leaderboards by Rank
+        lb_info = pd.json_normalize(lb_data['users'])
+        print(lb_info)
+#        print(pd.json_normalize(lb_data['users']))
 
+        lb_info.sort_values(['wins'], axis = 0, ascending = True, inplace = True)
+        print(lb_info)
 
         # Display the Leaderboards
-
-        return
+        return lb_info
 
 
     # Function to Add a New User to the Leaderboard

@@ -269,7 +269,8 @@ async def leaderboard(ctx):
 
     lb = leaderb()
 
-    lb.displayLeaderboard()
+    await ctx.send(lb.displayLeaderboard())
+#    lb.displayLeaderboard()
 
     return
 
