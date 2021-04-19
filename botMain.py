@@ -241,13 +241,13 @@ async def blackjack(ctx, message=None):
             url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
         embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
         embed.add_field(name="Player", value=blackjackGame.player, inline=False)
-        embed.set_footer(text="Enter &H to Hit or &S to Stand")
+        embed.set_footer(text="Enter $blackjack H to Hit or $blackjack S to Stand")
         await ctx.send(embed=embed)
 
     # Make the Move Given
-    if (ctx.message.content[11:] == 'H' and blackjackGame.player != []):
+    if (ctx.message.content[11] == 'H' and blackjackGame.player != []):
         embed = discord.Embed(title="BlackJack", color=0xe60a0a)
-        blackjackGame.choice(message.content[11:])
+        blackjackGame.choice(ctx.message.content[11])
         if (blackjackGame.done == 1):
             result = blackjackGame.result()
             embed.set_thumbnail(
@@ -263,14 +263,13 @@ async def blackjack(ctx, message=None):
             await ctx.send(embed=embed)
             blackjackGame.clean()
         else:
-            embed.set_footer(text="Enter &H to Hit or &S to Stand")
-        embed.set_thumbnail(
-            url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
-        embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
-        embed.add_field(name="Player", value=blackjackGame.player, inline=False)
-        await ctx.send(embed=embed)
-    elif (message.content[11:] == 'S' and blackjackGame.player != []):
-        blackjackGame.choice(message.content[11:])
+            embed.set_footer(text="Enter $blackjack H to Hit or $blackjack S to Stand")
+            embed.set_thumbnail(url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+            embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
+            embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+            await ctx.send(embed=embed)
+    elif (ctx.message.content[11] == 'S' and blackjackGame.player != []):
+        blackjackGame.choice(ctx.message.content[11])
         blackjackGame.dealerTurn()
         embed = discord.Embed(title="BlackJack", color=0xe60a0a)
         embed.set_thumbnail(

@@ -166,11 +166,10 @@ async def on_message(message):
                 blackjackGame.clean()
             else:
                 embed.set_footer(text="Enter &H to Hit or &S to Stand")
-            embed.set_thumbnail(
-                url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
-            embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
-            embed.add_field(name="Player", value=blackjackGame.player, inline=False)
-            await message.channel.send(embed=embed)
+                embed.set_thumbnail(url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+                embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
+                embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+                await message.channel.send(embed=embed)
         elif( message.content[1:] == 'S' and blackjackGame.player != []):
             blackjackGame.choice(message.content[1:])
             blackjackGame.dealerTurn()
