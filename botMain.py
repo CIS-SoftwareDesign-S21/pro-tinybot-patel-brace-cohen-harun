@@ -237,9 +237,20 @@ async def bts(ctx, message=None):
         move = message
         # For Testing Purposes
         print(move)
-        print(btsGames.get(ctx.author.id))
+
+        if(move == 'help'):
+            help = discord.Embed(
+                title="Battleship Commands!",
+                description="Use command '$bts' to start the game\nThe game is played on a 5x5 board, use A-E and 1-5 to select a row and column\nUse command '$bts [row][col]' to make a move, for example '$bts a1'\nUse command '$bts end' to end the game")
+            await ctx.send(embed=help)    
+            return
+
         if btsGames.get(ctx.author.id):
-            await ctx.send(btsGames[ctx.author.id].makeMove(move))
+
+            if(move == 'end'):
+                btsGames[ctx.author.id].endGame = True
+            else:
+                await ctx.send(btsGames[ctx.author.id].makeMove(move))
 
             if btsGames[ctx.author.id].checkWin == True or btsGames[ctx.author.id].endGame == True:
                 await ctx.send(embed=goodbyeMessage())
