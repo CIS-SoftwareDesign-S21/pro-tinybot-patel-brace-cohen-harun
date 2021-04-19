@@ -272,6 +272,12 @@ async def c4(ctx, user: typing.Union[discord.User, str]):
         await ctx.send(f"{ctx.author.mention}, Make your move!")
     else:
         move = user
+        if(move == 'help'):
+            help = discord.Embed(
+                title="Connect 4 Commands!",
+                description="Use command '$c4 @user' to start the game\nThe game is played on a 6X7 board, use A-G to select a column\nUse command '$c4 [col]' to make a move, for example '$c4 a'")
+            await ctx.send(embed=help)
+            return
         if c4Games.get(ctx.author.id):
             if ctx.author.id == c4Games[ctx.author.id].user:
                 if c4Games[ctx.author.id].userTurn == True:
