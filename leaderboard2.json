@@ -1,19 +1,22 @@
 {
     "users": [
         {
-            "user_name": "144",
-            "wins": "0",
-            "losses": "0"
+            "user_id": "144",
+            "user_name": "",
+            "wins": 1,
+            "losses": 0
         },
         {
-            "user_name": "164",
-            "wins": "0",
-            "losses": "0"
+            "user_id": "164",
+            "user_name": "",
+            "wins": 0,
+            "losses": 1
         },
         {
-            "user_name": "154378512306929675",
-            "wins": "0",
-            "losses": "0"
+            "user_id": "154378512306929675",
+            "user_name": "Xyeles#0393",
+            "wins": 0,
+            "losses": 0
         }
     ]
 }

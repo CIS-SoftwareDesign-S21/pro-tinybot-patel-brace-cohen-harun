@@ -13,23 +13,22 @@ class leaderb:
             lb_data = json.load(lb_file)
             print(lb_data)
 
-#            for i in lb_data['users']:
-#                print(i['user_name'])
-
         # Sort Leaderboards by Rank
         lb_info = pd.json_normalize(lb_data['users'])
-        print(lb_info)
-#        print(pd.json_normalize(lb_data['users']))
+#        print(lb_info)
 
         lb_info.sort_values(['wins'], axis = 0, ascending = True, inplace = True)
-        print(lb_info)
+#        print(lb_info)
+
+        # Close the JSON File
+        lb_file.close()
 
         # Display the Leaderboards
         return lb_info
 
 
     # Function to Add a New User to the Leaderboard
-    def addNewUser(ctx, userID):
+    def addNewUser(ctx, userID, userName):
 
         #### Insure User Doesn't already Exist ####
 
@@ -41,7 +40,8 @@ class leaderb:
             temp = lb_data['users']
 
             # Create User to Append to JSON File
-            nUser = {"user_name": f"{userID}",
+            nUser = {"user_id": f"{userID}",
+                     "user_name": f"{userName}",
                      "wins": "0",
                      "losses": "0"
                     }
@@ -52,10 +52,33 @@ class leaderb:
         with open("leaderboard2.json", 'w') as file:
             json.dump(lb_data, file, indent = 4)
 
+        # Close the JSON File
+        file.close()
+
         return
 
     # Function to Update the Leaderboards for Wins and Losses
     def updateLeaderboard(game, winner, loser):
+
+        # Open the JSON to be Loaded
+        with open("leaderboard2.json") as lb_file:
+            lb_data = json.load(lb_file)
+            print(lb_data)
+
+        for i in lb_data['users']:
+            if i['user_id'] == winner:
+                i['wins'] += 1
+            if i['user_id'] == loser:
+                i['losses'] += 1
+
+        # For Testing Purposes
+#        print(lb_data)
+
+        with open("leaderboard2.json", 'w') as file:
+            json.dump(lb_data, file, indent = 4)
+
+        # Close the JSON File
+        file.close()
 
         return
     

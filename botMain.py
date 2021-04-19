@@ -236,10 +236,12 @@ async def newUser(ctx):
 
     # Obtain the User's ID
     userID = ctx.author.id
+    userName = ctx.author
     print(userID)
+    print(userName)
 
     # Send the User ID to Function
-    lb.addNewUser(userID)
+    lb.addNewUser(userID, userName)
 
     # Open the JSON to be Loaded
 #    with open("leaderboard2.json") as lb_file:
@@ -280,6 +282,18 @@ async def leaderboard(ctx):
     embedVar.add_field(name = "Most Wins", value = f'```{data}```', inline = False)
     
     await ctx.send(embed = embedVar)
+
+    return
+
+
+# Test Command to Update the Leaderboard
+@client.command()
+async def updateLB(ctx):
+
+    # Instantiate the Leaderboard Class
+    lb = leaderb()
+
+    lb.updateLeaderboard("144", "164")
 
     return
 
