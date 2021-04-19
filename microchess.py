@@ -53,7 +53,8 @@ class MicrochessGame:
     playerNames = ['White', 'Black']
     emptySquares = {'white': Image.open('microchess-assets/ON-WHITE/EMPTY.png'), 'black': Image.open('microchess-assets/ON-BLACK/EMPTY.png')}
 
-    def __init__(self):
+    def __init__(self, whiteUser, blackUser):
+        self.userAccounts = [whiteUser, blackUser]
         self.turn = 0
         self.whitePoints = 0
         self.blackPoints = 0
@@ -93,7 +94,7 @@ class MicrochessGame:
 
         if move == 'forf':
             self.gameCompleted = True
-            return '%s has forfeited! Game over.' % self.playerNames[self.turn], False
+            return '%d has forfeited! Game over.' % self.userAccounts[self.turn].mention, False
 
         try:
             selectedPiece = self.players[self.turn][move[0].upper()]
@@ -123,7 +124,7 @@ class MicrochessGame:
                 self.playerScores[self.turn] += self.board[toRow][toColumn].getCaptured()
                 #if king is victim, end game
                 if self.board[toRow][toColumn].getCaptured() == -1:
-                    output += "%s has won the game!" % self.playerNames[self.turn]
+                    output += "%s has won the game!" % self.userAccounts[self.turn].mention
                     self.board[toRow][toColumn] = self.board[fromRow][fromColumn]
                     self.board[fromRow][fromColumn] = None
                     self.gameCompleted = True
@@ -146,7 +147,7 @@ class MicrochessGame:
                 output += 'King is in Check. '
 
             self.changeTurn()
-            output += '%s\'s move!' % self.playerNames[self.turn]
+            output += '%s\'s move!' % self.userAccounts[self.turn].mention
             return output, True
         else:
             output += 'This is an invalid move.'
@@ -255,3 +256,7 @@ class MicrochessGame:
         self.board = bCopy
         self.changeTurn()
         return output
+
+
+    def isTurnOf(self, userID):
+        return userID == self.userAccounts[self.turn].id

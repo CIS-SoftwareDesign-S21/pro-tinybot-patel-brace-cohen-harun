@@ -15,6 +15,8 @@ from leaderboard_impl import leaderb
 bot_info_file = open("token.json")
 bot_info = json.load(bot_info_file)
 
+chessGames = dict()
+
 # Prints out the Invite Link for the Bot
 print("Bot Invite Link: ")
 # print(f"https://discordapp.com/oauth2/authorize?client_id={bot_info['clientid']}&scope=bot&permissions={bot_info['permissions']}")
@@ -176,29 +178,40 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
 
 # Command to Play the MicroChess Minigame
 @client.command()
-async def ch(ctx, message=None):
+async def ch(ctx, user: typing.Union[discord.User, str]):
+    if not isinstance(user, str):
+        # Check if the user or opponent is already in a game, and create new one if not
+        if not chessGames.get(ctx.author.id) and not chessGames.get(str(user.id)):
+            chessGames[str(ctx.author.id)] = MicrochessGame(ctx.author, user)
+            chessGames[str(user.id)] = chessGames[f'{ctx.author.id}']
+            path = chessGames[str(ctx.author.id)].genBoardImage()
+            await ctx.send(file=discord.File(path))
+            await ctx.send(f'A chess game has started!\n{ctx.author.mention}, it\'s your move.\n' +
+                           'Enter a letter for your piece: P - Pawn, B- Bishop, K - Knight, R - Rook, S - King, Q - Queen\n' +
+                           'Piece ID should be followed by Column and Row ID\n' +
+                           'For example, \'$ch KB3\' is a good opening move.')
+        else:
+            await ctx.send(f'{ctx.author.mention}, you or the player you invited are already in a game!')
 
-    # Instantiate the Game unless a Move is being Played
-    if not message:
-        global chessGame
-        chessGame = MicrochessGame()
-        path = chessGame.genBoardImage()
-        await ctx.send(file=discord.File(path))
-        await ctx.send('A chess game has started!\nWhite, it\'s your move.\n' +
-            'Enter a letter for your piece: P - Pawn, B- Bishop, K - Knight, R - Rook, S - King, Q - Queen\n' +
-            'Piece ID should be followed by Column and Row ID\n' +
-            'For example, \'$ch KB3\' is a good opening move.')
 
-    else:
-        # Make the Move Given
-        move = ctx.message.content[4:]
+    else: #if the message is a move, not a username:
+        move = user
 
-        # For Testing Purposes
-        #print(move)
+        try:
+            game = chessGames[f'{ctx.author.id}']
+        except:
+            await ctx.send(f'{ctx.author.mention}, you are not currently in a chess game.\nUse command \'$ch @opponent\' to start game.')
+            return
 
-        updateMessage, playerMoved = chessGame.makeMove(move)
+        if not game.isTurnOf(ctx.author.id):
+            await ctx.send(f'{ctx.author.mention}, it\'s not your turn!')
+            return
+
+        #attempt to make move and send result to channel
+        updateMessage, playerMoved = game.makeMove(move)
         if playerMoved:
-            path = chessGame.genBoardImage()
+            #semaphore in here?
+            path = game.genBoardImage()
             await ctx.send(file=discord.File(path))
         await ctx.send(updateMessage)
 
