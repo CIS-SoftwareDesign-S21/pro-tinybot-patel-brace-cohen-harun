@@ -19,6 +19,7 @@ bot_info = json.load(bot_info_file)
 
 c4Games = dict()
 tttGames = dict()
+btsGames = dict()
 
 # Prints out the Invite Link for the Bot
 print("Bot Invite Link: ")
@@ -137,9 +138,9 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
     # Instantiate the Game unless a Move is being Played
     if not isinstance(user, str):
 
-        if not tttGames.get(ctx.author.id) and not tttGames.get(str(user.id)):
-            tttGames[str(ctx.author.id)] = TicTacToeGame(int(ctx.author.id), int(user.id))
-            tttGames[str(user.id)] = tttGames[f'{ctx.author.id}']
+        if not tttGames.get(ctx.author.id) and not tttGames.get(user.id):
+            tttGames[ctx.author.id] = TicTacToeGame(ctx.author.id, user.id)
+            tttGames[user.id] = tttGames[ctx.author.id]
             print(tttGames)
         else:
             error1 = discord.Embed(
@@ -150,30 +151,30 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
         start = discord.Embed(title="Tic-Tac-Toe Game Started!",
                               description="Enter $ttt \'Location\' To Make A Move\nExample: $ttt a1", color=15158332)
         await ctx.send(embed=start)
-        await ctx.channel.send(tttGames[str(ctx.author.id)].initBoard())
+        await ctx.channel.send(tttGames[ctx.author.id].initBoard())
         await ctx.send(f"{ctx.author.mention}, Make your move!")
 
     else:
         move = user
-        if not tttGames.get(ctx.author.id):
-            if ctx.author.id == tttGames[str(ctx.author.id)].user:
-                if tttGames[str(ctx.author.id)].userTurn == True:
-                    await ctx.send(tttGames[str(ctx.author.id)].makeMove(move))
+        if tttGames.get(ctx.author.id):
+            if ctx.author.id == tttGames[ctx.author.id].user:
+                if tttGames[ctx.author.id].userTurn == True:
+                    await ctx.send(tttGames[ctx.author.id].makeMove(move))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
 
-            elif ctx.author.id == tttGames[str(ctx.author.id)].opponent:
-                if tttGames[str(ctx.author.id)].userTurn == False:
-                    await ctx.send(tttGames[str(ctx.author.id)].makeMove(move))
+            elif ctx.author.id == tttGames[ctx.author.id].opponent:
+                if tttGames[ctx.author.id].userTurn == False:
+                    await ctx.send(tttGames[ctx.author.id].makeMove(move))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
 
-            if tttGames[str(ctx.author.id)].checkWin == True or tttGames[str(ctx.author.id)].checkTie == True:
+            if tttGames[ctx.author.id].checkWin == True or tttGames[ctx.author.id].checkTie == True:
                 await ctx.send(embed=goodbyeMessage())
-                userId: str = tttGames[str(ctx.author.id)].user
-                opId: str = tttGames[str(ctx.author.id)].opponent
-                del tttGames[f'{userId}']
-                del tttGames[f'{opId}']
+                userId: str = tttGames[ctx.author.id].user
+                opId: str = tttGames[ctx.author.id].opponent
+                del tttGames[userId]
+                del tttGames[opId]
                 print(tttGames)
         else:
             error2 = discord.Embed(
@@ -214,32 +215,50 @@ async def chess(ctx, message=None):
 
 # Command to Play the Battleship Game
 @client.command()
-async def battleship(ctx, message=None):
+async def bts(ctx, message=None):
 
     # Instantiate the Game unless a Game is already being Played
     if not message:
-        global battleshipGame
-        battleshipGame = BattleShipGame()
-        await ctx.send("Battleship game started!")
+        if not btsGames.get(ctx.author.id):
+            btsGames[ctx.author.id] = BattleShipGame(ctx.author.id)
+            print(btsGames)
+        else:
+            error1 = discord.Embed(
+                title="You are already in a game!")
+            await ctx.channel.send(embed=error1)
+            return
+
+        start = discord.Embed(title="Battleship Game Started!",
+                              description="Enter $bts \'Location\' To Make A Move\nExample: $bts a1", color=15158332)
+        await ctx.send(embed=start)
 
     # Make the Move Given
-    move = ctx.message.content[12:]
+    else:
+        move = message
+        # For Testing Purposes
+        print(move)
+        print(btsGames.get(ctx.author.id))
+        if btsGames.get(ctx.author.id):
+            await ctx.send(btsGames[ctx.author.id].makeMove(move))
 
-    # For Testing Purposes
-    print(move)
-
-    await ctx.send(battleshipGame.makeMove(move))
-
+            if btsGames[ctx.author.id].checkWin == True or btsGames[ctx.author.id].endGame == True:
+                await ctx.send(embed=goodbyeMessage())
+                userId = btsGames[ctx.author.id].user
+                del btsGames[userId]
+                print(btsGames)
+        else: 
+            error2 = discord.Embed(
+                title="Start a Battleship game ($bts) to make a move!")
+            await ctx.send(embed=error2)
     return
-
 
 @client.command()
 async def c4(ctx, user: typing.Union[discord.User, str]):
     if not isinstance(user, str):
         # Check if the user or opponent is already in a game
-        if not c4Games.get(ctx.author.id) and not c4Games.get(str(user.id)):
-            c4Games[str(ctx.author.id)] = Connect4Game(int(ctx.author.id), int(user.id))
-            c4Games[str(user.id)] = c4Games[f'{ctx.author.id}']
+        if not c4Games.get(ctx.author.id) and not c4Games.get(user.id):
+            c4Games[ctx.author.id] = Connect4Game(ctx.author.id, user.id)
+            c4Games[user.id] = c4Games[ctx.author.id]
             print(c4Games)
         else:
             error1 = discord.Embed(title="You or the player you invited are already in a game!")
@@ -249,39 +268,36 @@ async def c4(ctx, user: typing.Union[discord.User, str]):
         start = discord.Embed(title="Connect 4 Game Started!",
                               description="Enter $c4 \'Location\' To Make A Move\nExample: $c4 a", color=15158332)
         await ctx.send(embed=start)
-        await ctx.channel.send(c4Games[str(ctx.author.id)].initBoard())
+        await ctx.channel.send(c4Games[ctx.author.id].initBoard())
         await ctx.send(f"{ctx.author.mention}, Make your move!")
-
     else:
         move = user
-        if not c4Games.get(ctx.author.id):
-            if ctx.author.id == c4Games[str(ctx.author.id)].user:
-                if c4Games[str(ctx.author.id)].userTurn == True:
-                    await ctx.send(c4Games[str(ctx.author.id)].makeMove(move))
+        if c4Games.get(ctx.author.id):
+            if ctx.author.id == c4Games[ctx.author.id].user:
+                if c4Games[ctx.author.id].userTurn == True:
+                    await ctx.send(c4Games[ctx.author.id].makeMove(move))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
 
-            elif ctx.author.id == c4Games[str(ctx.author.id)].opponent:
-                if c4Games[str(ctx.author.id)].userTurn == False:
-                    await ctx.send(c4Games[str(ctx.author.id)].makeMove(move))
+            elif ctx.author.id == c4Games[ctx.author.id].opponent:
+                if c4Games[ctx.author.id].userTurn == False:
+                    await ctx.send(c4Games[ctx.author.id].makeMove(move))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
 
-            if c4Games[str(ctx.author.id)].checkWin == True or c4Games[str(ctx.author.id)].checkTie == True:
+            if c4Games[ctx.author.id].checkWin == True or c4Games[ctx.author.id].checkTie == True:
                 await ctx.send(embed=goodbyeMessage())
-                userId: str = c4Games[str(ctx.author.id)].user
-                opId: str = c4Games[str(ctx.author.id)].opponent
-                del c4Games[f'{userId}']
-                del c4Games[f'{opId}']
+                userId = c4Games[ctx.author.id].user
+                opId = c4Games[ctx.author.id].opponent
+                del c4Games[userId]
+                del c4Games[opId]
                 print(c4Games)
         else:
             error2 = discord.Embed(title = "Start a Connect 4 game to make a move!")
             await ctx.send(embed = error2)
-
     return
 
 # Error Handler if Invited User Doesn't exist for Tic-Tac-Toe ################################################################
-
 
 # Command to Create User ID in Leaderboard
 @client.command()
