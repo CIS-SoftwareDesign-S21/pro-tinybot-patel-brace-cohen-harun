@@ -10,6 +10,7 @@ from blackJack import blackJack
 game: TicTacToeGame = None
 game2: BattleShipGame = None
 chessGame: MicrochessGame = None
+blackjackGame: blackJack = None
 
 client = discord.Client()
 

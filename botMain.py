@@ -10,6 +10,7 @@ from tic_tac_toe import TicTacToeGame
 from microchess import MicrochessGame
 from battleShip import BattleShipGame
 from leaderboard_impl import leaderb
+from blackJack import blackJack
 
 # Bot Takes Token, ClientID, and Permissions from JSON File
 bot_info_file = open("token.json")
@@ -224,6 +225,64 @@ async def battleship(ctx, message=None):
 
     return
 
+# Command to Play the BlackJack Game
+@client.command()
+async def blackJack(ctx, message=None):
+
+    # Instantiate the Game unless a Game is already being Played
+    if not message:
+        global blackjackGame
+        blackjackGame = blackJack()
+        await ctx.send("BlackJack game started!")
+        blackjackGame.start()
+        embed = discord.Embed(title="BlackJack", color=0xe60a0a)
+        embed.set_thumbnail(
+            url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+        embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
+        embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+        embed.set_footer(text="Enter &H to Hit or &S to Stand")
+        await ctx.send(embed=embed)
+
+    # Make the Move Given
+    if (ctx.message.content[1:] == 'H'):
+        embed = discord.Embed(title="BlackJack", color=0xe60a0a)
+        blackjackGame.choice(message.content[1:])
+        if (blackjackGame.done == 1):
+            result = blackjackGame.result()
+            if (result == 1):
+                embed.set_footer(text="PLAYER WIN")
+            elif (result == 2):
+                embed.set_footer(text="DRAW")
+            else:
+                embed.set_footer(text="PLAYER LOSE")
+        else:
+            embed.set_footer(text="Enter &H to Hit or &S to Stand")
+        embed.set_thumbnail(
+            url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+        embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
+        embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+        await ctx.send(embed=embed)
+    elif (message.content[1:] == 'S'):
+        blackjackGame.choice(message.content[1:])
+        blackjackGame.dealerTurn()
+        embed = discord.Embed(title="BlackJack", color=0xe60a0a)
+        embed.set_thumbnail(
+            url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+        embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
+        embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+        result = blackjackGame.result()
+
+        if (result == 1):
+            embed.set_footer(text="PLAYER WIN")
+        elif (result == 2):
+            embed.set_footer(text="DRAW")
+        else:
+            embed.set_footer(text="PLAYER LOSE")
+        await ctx.send(embed=embed)
+    else:
+        await ctx.send("Wrong Input")
+
+    return
 
 # Error Handler if Invited User Doesn't exist for Tic-Tac-Toe ################################################################
 
