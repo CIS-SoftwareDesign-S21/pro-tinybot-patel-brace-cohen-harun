@@ -267,14 +267,17 @@ async def newUser(ctx):
 @client.command()
 async def leaderboard(ctx):
 
+    # Instantiate the Leaderboard Class
     lb = leaderb()
 
+    # Create an Embedded Variable for Formatting
     embedVar = discord.Embed(title = "__**Leaderboard**__", timestamp = ctx.message.created_at)
 
+    # Take the Leaderboard Data in as a Variable
     data = lb.displayLeaderboard()
-#    lb.displayLeaderboard()
 
-    embedVar.add_field(name = "Leaderboard", value = f'```{data}```', inline = False)
+    # Add the Leaderboard Data as a Field in the Embed
+    embedVar.add_field(name = "Most Wins", value = f'```{data}```', inline = False)
     
     await ctx.send(embed = embedVar)
 
