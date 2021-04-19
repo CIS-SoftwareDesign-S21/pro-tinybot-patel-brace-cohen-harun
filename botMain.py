@@ -16,6 +16,7 @@ bot_info_file = open("token.json")
 bot_info = json.load(bot_info_file)
 
 chessGames = dict()
+cLock = asyncio.Lock()
 
 # Prints out the Invite Link for the Bot
 print("Bot Invite Link: ")
@@ -181,7 +182,7 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
 async def ch(ctx, user: typing.Union[discord.User, str]):
     if not isinstance(user, str):
         # Check if the user or opponent is already in a game, and create new one if not
-        if not chessGames.get(ctx.author.id) and not chessGames.get(str(user.id)):
+        if not chessGames.get(str(ctx.author.id)) and not chessGames.get(str(user.id)):
             chessGames[str(ctx.author.id)] = MicrochessGame(ctx.author, user)
             chessGames[str(user.id)] = chessGames[f'{ctx.author.id}']
             path = chessGames[str(ctx.author.id)].genBoardImage()
@@ -196,6 +197,11 @@ async def ch(ctx, user: typing.Union[discord.User, str]):
 
     else: #if the message is a move, not a username:
         move = user
+        if move.startswith('help'):
+            await ctx.send('To start a chess game, use command \'$ch @opponent\'\n' +
+                           'To make a move, enter a letter for your piece: P - Pawn, B- Bishop, K - Knight, R - Rook, S - King, Q - Queen\n' +
+                           'Piece ID should be followed by Column and Row ID\nFor example, \'$ch BD3\' moves the Bishop to D3, if possible.')
+            return
 
         try:
             game = chessGames[f'{ctx.author.id}']
@@ -210,10 +216,16 @@ async def ch(ctx, user: typing.Union[discord.User, str]):
         #attempt to make move and send result to channel
         updateMessage, playerMoved = game.makeMove(move)
         if playerMoved:
-            #semaphore in here?
-            path = game.genBoardImage()
-            await ctx.send(file=discord.File(path))
+            async with cLock:
+                path = game.genBoardImage()
+                await ctx.send(file=discord.File(path))
         await ctx.send(updateMessage)
+
+        if game.gameCompleted:
+            whitePlayer = game.userAccounts[0]
+            blackPlayer = game.userAccounts[1]
+            del chessGames[str(whitePlayer.id)]
+            del chessGames[str(blackPlayer.id)]
 
     return
 

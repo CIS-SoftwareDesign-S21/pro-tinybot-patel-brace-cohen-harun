@@ -89,12 +89,9 @@ class MicrochessGame:
 
 
     def makeMove(self, move: str):
-        if self.gameCompleted:
-            return 'The game is over! Use $chess command to start new game.', False
-
         if move == 'forf':
             self.gameCompleted = True
-            return '%d has forfeited! Game over.' % self.userAccounts[self.turn].mention, False
+            return '%s has forfeited! Game over.' % self.userAccounts[self.turn].mention, False
 
         try:
             selectedPiece = self.players[self.turn][move[0].upper()]
@@ -114,7 +111,7 @@ class MicrochessGame:
             return output, False
 
         if self.wouldCauseCheck(int(fromRow), int(fromColumn), int(toRow), int(toColumn)):
-            return 'You can\'t put your own King into Check!', False
+            return 'You can\'t put/leave your own King into Check!', False
 
         #print('Attempting to move %s from (%s, %s) to (%s, %s).' % ( selectedPiece.name, fromRow, fromColumn, toRow, toColumn))
 
