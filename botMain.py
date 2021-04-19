@@ -269,8 +269,14 @@ async def leaderboard(ctx):
 
     lb = leaderb()
 
-    await ctx.send(lb.displayLeaderboard())
+    embedVar = discord.Embed(title = "__**Leaderboard**__", timestamp = ctx.message.created_at)
+
+    data = lb.displayLeaderboard()
 #    lb.displayLeaderboard()
+
+    embedVar.add_field(name = "Leaderboard", value = f'```{data}```', inline = False)
+    
+    await ctx.send(embed = embedVar)
 
     return
 
