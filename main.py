@@ -12,6 +12,7 @@ game: TicTacToeGame = None
 game2: BattleShipGame = None
 chessGame: MicrochessGame = None
 connect4Game: Connect4Game = None
+blackjackGame: blackJack = None
 
 client = discord.Client()
 
@@ -148,25 +149,30 @@ async def on_message(message):
         await message.channel.send(embed=embed)
 
     elif message.content.startswith('&'):
-        if(message.content[1:] == 'H'):
+        if(message.content[1:] == 'H' and blackjackGame.player != []):
             embed = discord.Embed(title="BlackJack", color=0xe60a0a)
             blackjackGame.choice(message.content[1:])
             if(blackjackGame.done == 1):
                 result = blackjackGame.result()
+                embed.set_thumbnail(
+                    url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+                embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
+                embed.add_field(name="Player", value=blackjackGame.player, inline=False)
                 if (result == 1):
                     embed.set_footer(text="PLAYER WIN")
                 elif (result == 2):
                     embed.set_footer(text="DRAW")
                 else:
                     embed.set_footer(text="PLAYER LOSE")
+                await message.channel.send(embed=embed)
+                blackjackGame.clean()
             else:
                 embed.set_footer(text="Enter &H to Hit or &S to Stand")
-            embed.set_thumbnail(
-                url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
-            embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
-            embed.add_field(name="Player", value=blackjackGame.player, inline=False)
-            await message.channel.send(embed=embed)
-        elif( message.content[1:] == 'S'):
+                embed.set_thumbnail(url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+                embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
+                embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+                await message.channel.send(embed=embed)
+        elif( message.content[1:] == 'S' and blackjackGame.player != []):
             blackjackGame.choice(message.content[1:])
             blackjackGame.dealerTurn()
             embed = discord.Embed(title="BlackJack", color=0xe60a0a)
@@ -183,6 +189,7 @@ async def on_message(message):
             else:
                 embed.set_footer(text="PLAYER LOSE")
             await message.channel.send(embed=embed)
+            blackjackGame.clean()
         else:
             await message.channel.send("Wrong Input")
 

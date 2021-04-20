@@ -78,8 +78,8 @@ class BattleShipGame:
             elif(orientation == 2):  # if vertical
                 board[row+i][col] = ':sailboat:️️'
 
-
     # check each turn if someone won and end game if so
+
     def checkVictoryStatus(self) -> str:
 
         # check the user board to see if the comp won
@@ -112,13 +112,10 @@ class BattleShipGame:
     def makeMove(self, move) -> str:
         output: str = '\n'
 
-
         try:  # accept move from player; ask again if input is not correct
             # possibilities, repeat spot, hit ship, hit nothing
             # first check if it is a repeat spot
-            if("done" in move):
-                self.endGame = True
-                return
+
             if(self.comBoardToShowUser[self.rowIDs.index(move[0].upper())][int(move[1]) - 1] == '🟦' or self.comBoardToShowUser[self.rowIDs.index(move[0].upper())][int(move[1]) - 1] == '🔥'):
                 output += '\nYou picked a repeat space\n'
             # you hit an empty spot
@@ -136,7 +133,7 @@ class BattleShipGame:
                 output += '\nI did not account for this option in the code user pick.\n'
 
         except (IndexError, ValueError):
-            return 'Please enter $battleship followed by letter A,B,C,D or E to select row, and integer 1-5 to select column. A good first move would be $battleship b2'
+            return 'Please enter $bts followed by letter A,B,C,D or E to select row, and integer 1-5 to select column. A good move would be $bts b2'
 
         # AFTER YOU MAKE YOUR MOVE, THE COMPUTER MAKES A MOVE
         # pick a random row and col and that is the move

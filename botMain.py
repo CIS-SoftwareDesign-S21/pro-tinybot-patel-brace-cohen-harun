@@ -11,6 +11,7 @@ from microchess import MicrochessGame
 from battleShip import BattleShipGame
 from connect4 import Connect4Game
 from leaderboard_impl import leaderb
+from blackJack import blackJack
 
 
 # Bot Takes Token, ClientID, and Permissions from JSON File
@@ -20,6 +21,8 @@ bot_info = json.load(bot_info_file)
 c4Games = dict()
 tttGames = dict()
 btsGames = dict()
+chessGames = dict()
+cLock = asyncio.Lock()
 
 # Prints out the Invite Link for the Bot
 print("Bot Invite Link: ")
@@ -38,8 +41,10 @@ gameDictionary = {
     "Mood" : "mood",
     "Coinflip" : "coinf",
     "Tic-Tac-Toe" : "ttt",
-    "BattleShip" : "battleship",
-    "Connect 4" : "c4"
+    "BattleShip" : "battleship"
+    "Connect 4" : "c4",
+    "Chess" : "ch",
+    "BlackJack" : "blackjack"
 }
 
 # Function to Display a Goodbye Message for when a Game Ends
@@ -70,7 +75,7 @@ async def games(ctx):
 
     # Appends all Available Commands/Games to Play to a String (Acting as a List to Display)
     for game in gameDictionary:
-        gamesList += game + "\n"
+        gamesList += game + ':\t$' + gameDictionary[game] + "\n"
 
     # Sends the List of Available Sounds to Play to the Discord Channel
     await ctx.send(gamesList)
@@ -85,7 +90,7 @@ async def hello(ctx, message=None):
         await ctx.send("Hello!")
         return
 
-    # If Tinyboy was Greeted
+    # If Tinybot was Greeted
     if (message.lower() == "tinybot"):
         await ctx.send(f'Hello, {ctx.author.mention}!')
         return
@@ -123,7 +128,7 @@ async def coinf(ctx):
         embedVar.set_image(url="https://media1.tenor.com/images/20f12dfa0e544b7c1045c903c572f9ec/tenor.gif?itemid=20771728")
     else:
         embedVar.set_image(url="https://media1.tenor.com/images/51e09c7f9e8051ab944f0aaeed426e80/tenor.gif?itemid=20771732")
-    
+
     # Send the Image
     await ctx.send(embed = embedVar)
 
@@ -185,30 +190,53 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
 
 # Command to Play the MicroChess Minigame
 @client.command()
-async def chess(ctx, message=None):
+async def ch(ctx, user: typing.Union[discord.User, str]):
+    if not isinstance(user, str):
+        # Check if the user or opponent is already in a game, and create new one if not
+        if not chessGames.get(str(ctx.author.id)) and not chessGames.get(str(user.id)):
+            chessGames[str(ctx.author.id)] = MicrochessGame(ctx.author, user)
+            chessGames[str(user.id)] = chessGames[f'{ctx.author.id}']
+            path = chessGames[str(ctx.author.id)].genBoardImage()
+            await ctx.send(file=discord.File(path))
+            await ctx.send(f'A chess game has started!\n{ctx.author.mention}, it\'s your move.\n' +
+                           'Enter a letter for your piece: P - Pawn, B- Bishop, K - Knight, R - Rook, S - King, Q - Queen\n' +
+                           'Piece ID should be followed by Column and Row ID\n' +
+                           'For example, \'$ch KB3\' is a good opening move.')
+        else:
+            await ctx.send(f'{ctx.author.mention}, you or the player you invited are already in a game!')
 
-    # Instantiate the Game unless a Move is being Played
-    if not message:
-        global chessGame
-        chessGame = MicrochessGame()
-        path = chessGame.genBoardImage()
-        await ctx.send(file=discord.File(path))
-        await ctx.send('A chess game has started!\nWhite, it\'s your move.')
-        await ctx.send('Enter * followed by a letter for your piece: P - Pawn, B- Bishop, K - Knight, R - Rook, S - King')
-        await ctx.send('Piece ID should be followed by Column and Row ID')
-        await ctx.send('For example, *KB3 is a good opening move.')
 
-    # Make the Move Given
-    move = ctx.message.content[7:]
-    
-    # For Testing Purposes
-    print(move)
+    else: #if the message is a move, not a username:
+        move = user
+        if move.startswith('help'):
+            await ctx.send('To start a chess game, use command \'$ch @opponent\'\n' +
+                           'To make a move, enter a letter for your piece: P - Pawn, B- Bishop, K - Knight, R - Rook, S - King, Q - Queen\n' +
+                           'Piece ID should be followed by Column and Row ID\nFor example, \'$ch BD3\' moves the Bishop to D3, if possible.')
+            return
 
-    updateMessage, playerMoved = chessGame.makeMove(move)
-    if playerMoved:
-        path = chessGame.genBoardImage()
-        await ctx.send(file=discord.File(path))
-    await ctx.send(updateMessage)
+        try:
+            game = chessGames[f'{ctx.author.id}']
+        except:
+            await ctx.send(f'{ctx.author.mention}, you are not currently in a chess game.\nUse command \'$ch @opponent\' to start game.')
+            return
+
+        if not game.isTurnOf(ctx.author.id):
+            await ctx.send(f'{ctx.author.mention}, it\'s not your turn!')
+            return
+
+        #attempt to make move and send result to channel
+        updateMessage, playerMoved = game.makeMove(move)
+        if playerMoved:
+            async with cLock:
+                path = game.genBoardImage()
+                await ctx.send(file=discord.File(path))
+        await ctx.send(updateMessage)
+
+        if game.gameCompleted:
+            whitePlayer = game.userAccounts[0]
+            blackPlayer = game.userAccounts[1]
+            del chessGames[str(whitePlayer.id)]
+            del chessGames[str(blackPlayer.id)]
 
     return
 
@@ -237,16 +265,27 @@ async def bts(ctx, message=None):
         move = message
         # For Testing Purposes
         print(move)
-        print(btsGames.get(ctx.author.id))
+
+        if(move == 'help'):
+            help = discord.Embed(
+                title="Battleship Commands!",
+                description="Use command '$bts' to start the game\nThe game is played on a 5x5 board, use A-E and 1-5 to select a row and column\nUse command '$bts [row][col]' to make a move, for example '$bts a1'\nUse command '$bts end' to end the game")
+            await ctx.send(embed=help)
+            return
+
         if btsGames.get(ctx.author.id):
-            await ctx.send(btsGames[ctx.author.id].makeMove(move))
+
+            if(move == 'end'):
+                btsGames[ctx.author.id].endGame = True
+            else:
+                await ctx.send(btsGames[ctx.author.id].makeMove(move))
 
             if btsGames[ctx.author.id].checkWin == True or btsGames[ctx.author.id].endGame == True:
                 await ctx.send(embed=goodbyeMessage())
                 userId = btsGames[ctx.author.id].user
                 del btsGames[userId]
                 print(btsGames)
-        else: 
+        else:
             error2 = discord.Embed(
                 title="Start a Battleship game ($bts) to make a move!")
             await ctx.send(embed=error2)
@@ -303,6 +342,71 @@ async def c4(ctx, user: typing.Union[discord.User, str]):
             await ctx.send(embed = error2)
     return
 
+# Command to Play the BlackJack Game
+@client.command()
+async def blackjack(ctx, message=None):
+
+    # Instantiate the Game unless a Game is already being Played
+    if not message:
+        global blackjackGame
+        blackjackGame = blackJack()
+        await ctx.send("BlackJack game started!")
+        blackjackGame.start()
+        embed = discord.Embed(title="BlackJack", color=0xe60a0a)
+        embed.set_thumbnail(
+            url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+        embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
+        embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+        embed.set_footer(text="Enter $blackjack H to Hit or $blackjack S to Stand")
+        await ctx.send(embed=embed)
+
+    # Make the Move Given
+    if (ctx.message.content[11] == 'H' and blackjackGame.player != []):
+        embed = discord.Embed(title="BlackJack", color=0xe60a0a)
+        blackjackGame.choice(ctx.message.content[11])
+        if (blackjackGame.done == 1):
+            result = blackjackGame.result()
+            embed.set_thumbnail(
+                url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+            embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
+            embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+            if (result == 1):
+                embed.set_footer(text="PLAYER WIN")
+            elif (result == 2):
+                embed.set_footer(text="DRAW")
+            else:
+                embed.set_footer(text="PLAYER LOSE")
+            await ctx.send(embed=embed)
+            blackjackGame.clean()
+        else:
+            embed.set_footer(text="Enter $blackjack H to Hit or $blackjack S to Stand")
+            embed.set_thumbnail(url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+            embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
+            embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+            await ctx.send(embed=embed)
+    elif (ctx.message.content[11] == 'S' and blackjackGame.player != []):
+        blackjackGame.choice(ctx.message.content[11])
+        blackjackGame.dealerTurn()
+        embed = discord.Embed(title="BlackJack", color=0xe60a0a)
+        embed.set_thumbnail(
+            url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
+        embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
+        embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+        result = blackjackGame.result()
+
+        if (result == 1):
+            embed.set_footer(text="PLAYER WIN")
+        elif (result == 2):
+            embed.set_footer(text="DRAW")
+        else:
+            embed.set_footer(text="PLAYER LOSE")
+        await ctx.send(embed=embed)
+        blackjackGame.clean()
+    else:
+        await ctx.send("Wrong Input")
+
+    return
+
 # Error Handler if Invited User Doesn't exist for Tic-Tac-Toe ################################################################
 
 # Command to Create User ID in Leaderboard
@@ -339,4 +443,4 @@ async def newUser(ctx):
 
     return
 
-client.run(bot_info['token'])   
+client.run(bot_info['token'])
