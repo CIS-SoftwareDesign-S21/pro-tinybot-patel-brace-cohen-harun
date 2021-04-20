@@ -2,11 +2,11 @@ from PIL import Image
 
 class ChessPiece:
 
-    initial: str
+    global initial
     name: str
     global icons
     value: int
-    color: int #0 for white, 1 for black
+    global color #0 for white, 1 for black
 
     def __init__(self, initial: str, name: str, onWhiteIcon: Image, onBlackIcon: Image, value: int, color: int ):
         self.initial = initial
@@ -20,11 +20,9 @@ class ChessPiece:
     def canMakeMove( self, fromRow: int, fromColumn: int, toRow: int, toColumn: int, board ) -> bool:
         if board[toRow][toColumn] != None and board[fromRow][fromColumn].color == board[toRow][toColumn].color:
             return False #can't take own piece
-        #TODO: make illegal to put own king into check
 
-    def getCaptured():
-        pass
-
+    def getCaptured(self):
+        return self.value
 
 
 class Pawn(ChessPiece):
@@ -103,6 +101,7 @@ class Knight(ChessPiece):
 
 
 
+
 class Rook(ChessPiece):
 
     def __init__(self, onWhiteIcon: Image, onBlackIcon: Image, color: int ):
@@ -115,7 +114,7 @@ class Rook(ChessPiece):
         distColumn = fromColumn - toColumn
         distRow = fromRow - toRow
 
-        #move horiztontally
+        #move horizontally
         if distRow == 0 and distColumn != 0:
             # check for pieces blocking path
             addColumn: int = distColumn / int(abs(distColumn))
@@ -139,7 +138,7 @@ class Rook(ChessPiece):
 
             return True
 
-        #not horiztonal or vertical move
+        #not horizontal or vertical move
         return False
 
 
@@ -157,3 +156,55 @@ class King(ChessPiece):
         distRow = abs(fromRow - toRow)
         #one space in any direction
         return (distRow <= 1 and distColumn <= 1) and (distRow == 1 or distColumn == 1)
+
+
+class Queen(ChessPiece):
+
+    def __init__(self, onWhiteIcon: Image, onBlackIcon: Image, color: int ):
+        super(Queen, self).__init__( "Q", "Queen", onWhiteIcon, onBlackIcon, 9, color)
+
+    def canMakeMove( self, fromRow: int, fromColumn: int, toRow: int, toColumn: int, board ) -> bool:
+        distColumn = fromColumn - toColumn
+        distRow = fromRow - toRow
+
+        # move horizontally
+        if distRow == 0 and distColumn != 0:
+            # check for pieces blocking path
+            addColumn: int = distColumn / int(abs(distColumn))
+            toColumn += addColumn
+            while toColumn != fromColumn:
+                if board[int(toRow)][int(toColumn)] != None:
+                    return False
+                toColumn += addColumn
+
+            return True
+
+        # move vertically
+        if distColumn == 0 and distRow != 0:
+            # check for pieces blocking path
+            addRow: int = distRow / int(abs(distRow))
+            toRow += addRow
+            while toRow != fromRow:
+                if board[int(toRow)][int(toColumn)] != None:
+                    return False
+                toRow += addRow
+
+            return True
+
+        #move diagonally
+        if abs(distColumn) == abs(distRow):
+            addColumn: int = distColumn / int(abs(distColumn))
+            addRow: int = distRow / int(abs(distRow))
+            toColumn += addColumn
+            toRow += addRow
+            while toRow != fromRow:
+                # print('checking path at (%s, %s)' % (toRow, toColumn) )
+
+                if board[int(toRow)][int(toColumn)] != None:
+                    return False
+                toColumn += addColumn
+                toRow += addRow
+
+            return True
+        #illegal move
+        return False
