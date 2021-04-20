@@ -68,8 +68,8 @@ class leaderb:
     def updateLeaderboard(game, winner, loser, winnerName, loserName):
 
         # Add any New User(s) to the Leaderboard
-        addNewUser(winner, winnerName)
-        addNewUser(loser, loserName)
+#        addNewUser(winner, winnerName)
+#        addNewUser(loser, loserName)
 
         # Open the JSON to be Loaded
         with open("leaderboard2.json") as lb_file:
@@ -79,8 +79,12 @@ class leaderb:
         for i in lb_data['users']:
             if int(i['user_id']) == winner:
                 i['wins'] += 1
+                if i['user_name'] != winnerName:
+                    i['user_name'] = winnerName
             if int(i['user_id']) == loser:
                 i['losses'] += 1
+                if i['user_name'] != loserName:
+                    i['user_name'] = loserName
 
         # For Testing Purposes
 #        print(lb_data)
