@@ -319,6 +319,9 @@ async def bts(ctx, message=None):
 
 @client.command()
 async def c4(ctx, user: typing.Union[discord.User, str]):
+    
+    lb = leaderb()
+    
     if not isinstance(user, str):
         # Check if the user or opponent is already in a game
         if not c4Games.get(ctx.author.id) and not c4Games.get(user.id):
@@ -347,12 +350,24 @@ async def c4(ctx, user: typing.Union[discord.User, str]):
             if ctx.author.id == c4Games[ctx.author.id].user:
                 if c4Games[ctx.author.id].userTurn == True:
                     await ctx.send(c4Games[ctx.author.id].makeMove(move))
+                    if c4Games[ctx.author.id].checkWin == True:
+                        winner = c4Games[ctx.author.id].user
+                        loser = c4Games[ctx.author.id].opponent
+                        winnerName = await client.fetch_user(int(winner))
+                        loserName = await client.fetch_user(int(loser))
+                        lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
 
             elif ctx.author.id == c4Games[ctx.author.id].opponent:
                 if c4Games[ctx.author.id].userTurn == False:
                     await ctx.send(c4Games[ctx.author.id].makeMove(move))
+                    if c4Games[ctx.author.id].checkWin == True:
+                        winner = c4Games[ctx.author.id].opponent
+                        loser = c4Games[ctx.author.id].user
+                        winnerName = await client.fetch_user(int(winner))
+                        loserName = await client.fetch_user(int(loser))
+                        lb.updateLeaderboard(winner, loser, winnerName, loserName)
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
 
@@ -371,6 +386,8 @@ async def c4(ctx, user: typing.Union[discord.User, str]):
 # Command to Play the BlackJack Game
 @client.command()
 async def bj(ctx, message=None):
+
+    lb = leaderb()
 
     # Instantiate the Game unless a Game is already being Played
     if not message:
@@ -441,11 +458,20 @@ async def bj(ctx, message=None):
 
         if (result == 1):
             embed.set_footer(text="PLAYER WIN")
+            winner = ctx.author.id
+            winnerName = ctx.author
+            loser = 0
+            loserName = "Computer"
         elif (result == 2):
             embed.set_footer(text="DRAW")
         else:
             embed.set_footer(text="PLAYER LOSE")
+            winner = 0
+            winnerName = "Computer"
+            loser = ctx.author.id
+            loserName = ctx.author
         await ctx.send(embed=embed)
+        lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
         bjGames[ctx.author.id].clean()
         await ctx.send(embed=goodbyeMessage())
         del bjGames[ctx.author.id]

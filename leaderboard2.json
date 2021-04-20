@@ -13,10 +13,16 @@
             "losses": 5
         },
         {
+            "user_id": "0",
+            "user_name": "Computer",
+            "wins": 1,
+            "losses": 0
+        },
+        {
             "user_id": "154378512306929675",
             "user_name": "Xyeles#0393",
             "wins": 1,
-            "losses": 0
+            "losses": 1
         },
         {
             "user_id": "243191992367054850",
