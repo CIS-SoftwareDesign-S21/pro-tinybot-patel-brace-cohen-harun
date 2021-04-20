@@ -42,10 +42,10 @@ gameDictionary = {
     "Mood" : "mood",
     "Coinflip" : "coinf",
     "Tic-Tac-Toe" : "ttt",
-    "BattleShip" : "battleship",
+    "BattleShip" : "bts",
     "Connect 4" : "c4",
     "Chess" : "ch",
-    "BlackJack" : "blackjack"
+    "BlackJack" : "bj"
 }
 
 # Function to Display a Goodbye Message for when a Game Ends
