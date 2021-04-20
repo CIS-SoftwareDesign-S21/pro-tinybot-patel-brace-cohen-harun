@@ -179,8 +179,6 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
                         loser = tttGames[ctx.author.id].opponent
                         winnerName = await client.fetch_user(int(winner))
                         loserName = await client.fetch_user(int(loser))
-                        print(winnerName)
-                        print(loserName)
                         lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
@@ -193,8 +191,6 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
                         loser = tttGames[ctx.author.id].user
                         winnerName = await client.fetch_user(int(winner))
                         loserName = await client.fetch_user(int(loser))
-                        print(winnerName)
-                        print(loserName)
                         lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
