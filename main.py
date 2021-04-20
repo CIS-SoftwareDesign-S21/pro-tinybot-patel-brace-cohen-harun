@@ -6,10 +6,12 @@ from battleShip import BattleShipGame
 from coinflip import coinflip
 from microchess import MicrochessGame
 from blackJack import blackJack
+from connect4 import Connect4Game
 
 game: TicTacToeGame = None
 game2: BattleShipGame = None
 chessGame: MicrochessGame = None
+connect4Game: Connect4Game = None
 blackjackGame: blackJack = None
 
 client = discord.Client()
@@ -77,7 +79,7 @@ async def on_message(message):
                 if game.userTurn == True:
                     await message.channel.send(game.makeMove(message.content[1:]))
                     # Im doing something wrong here because it won't print the embed
-                    if game.checkWin == True: 
+                    if game.checkWin == True:
                         goodbye = goodbyeMessage()
                         await message.channel.send(embed=goodbye)
                 else:
@@ -192,5 +194,12 @@ async def on_message(message):
             await message.channel.send("Wrong Input")
 
 
+    elif message.content.startswith('c4'):
+        global connect4Game
+        connect4Game = Connect4Game()
+        await message.channel.send(connect4Game.initBoard())
+        await message.channel.send('Connect 4 game started!')
+    elif message.content.startswith('-'):
+        await message.channel.send(connect4Game.makeMove(message.content[1:]))
 
 client.run('ODIzOTIyODMwOTI4Mzc5OTI0.YFn37g.qBiNOnlxbAgc7n4jfu9GQi2dkQk')

@@ -3,24 +3,23 @@ import os
 
 class TicTacToeGame:
 
-    def __init__(self, user, opponent, userTurn, checkWin, gameEnd, checkTie):
+    def __init__(self, user, opponent):
         self.user = user
         self.opponent = opponent
-        self.userTurn = userTurn
-        self.checkWin = checkWin
-        self.gameEnd = gameEnd
-        self.checkTie = checkTie
-
-    board = [
-        [ '⬜', '⬜', '⬜' ],
-        [ '⬜', '⬜', '⬜' ],
-        [ '⬜', '⬜', '⬜' ]
-    ]
+        self.userTurn = True
+        self.checkWin = False
+        self.gameEnd = False
+        self.checkTie = False
+        self.turn: str = '⭕'
+        self.squaresFilled = 0
+        self.board = [
+            ['⬜', '⬜', '⬜'],
+            ['⬜', '⬜', '⬜'],
+            ['⬜', '⬜', '⬜']
+        ]
 
     columnIDs = [ 'A', 'B', 'C' ]
-    turn: str = '⭕'
-    squaresFilled = 0
-
+    
     #check each turn if someone won and end game if so
     def checkForVictory(self) -> str:
 
