@@ -66,7 +66,7 @@ class leaderb:
 
     # Function to Update the Leaderboards for Wins and Losses
     def updateLeaderboard(ctx, winner, loser, winnerName, loserName):
-
+        
         # Add any New User(s) to the Leaderboard
         leaderb.addNewUser(ctx, winner, winnerName)
         leaderb.addNewUser(ctx, loser, loserName)

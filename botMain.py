@@ -140,6 +140,8 @@ async def coinf(ctx):
 @client.command()
 async def ttt(ctx, user: typing.Union[discord.User, str]):
 
+    lb = leaderb()
+
     # Instantiate the Game unless a Move is being Played
     if not isinstance(user, str):
 
@@ -172,19 +174,35 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
             if ctx.author.id == tttGames[ctx.author.id].user:
                 if tttGames[ctx.author.id].userTurn == True:
                     await ctx.send(tttGames[ctx.author.id].makeMove(move))
+                    if tttGames[ctx.author.id].checkWin == True:
+                        winner = tttGames[ctx.author.id].user
+                        loser = tttGames[ctx.author.id].opponent
+                        winnerName = await client.fetch_user(int(winner))
+                        loserName = await client.fetch_user(int(loser))
+                        print(winnerName)
+                        print(loserName)
+                        lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
 
             elif ctx.author.id == tttGames[ctx.author.id].opponent:
                 if tttGames[ctx.author.id].userTurn == False:
                     await ctx.send(tttGames[ctx.author.id].makeMove(move))
+                    if tttGames[ctx.author.id].checkWin == True:
+                        winner = tttGames[ctx.author.id].opponent
+                        loser = tttGames[ctx.author.id].user
+                        winnerName = await client.fetch_user(int(winner))
+                        loserName = await client.fetch_user(int(loser))
+                        print(winnerName)
+                        print(loserName)
+                        lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
 
             if tttGames[ctx.author.id].checkWin == True or tttGames[ctx.author.id].checkTie == True:
                 await ctx.send(embed=goodbyeMessage())
-                userId: str = tttGames[ctx.author.id].user
-                opId: str = tttGames[ctx.author.id].opponent
+                userId = tttGames[ctx.author.id].user
+                opId = tttGames[ctx.author.id].opponent
                 del tttGames[userId]
                 del tttGames[opId]
                 print(tttGames)

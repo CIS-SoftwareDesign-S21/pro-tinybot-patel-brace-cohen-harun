@@ -15,8 +15,14 @@
         {
             "user_id": "154378512306929675",
             "user_name": "Xyeles#0393",
-            "wins": 7,
+            "wins": 1,
             "losses": 0
+        },
+        {
+            "user_id": "243191992367054850",
+            "user_name": "Cheese#1740",
+            "wins": 0,
+            "losses": 1
         }
     ]
 }
