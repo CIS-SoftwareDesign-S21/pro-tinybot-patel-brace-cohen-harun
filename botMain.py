@@ -161,6 +161,13 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
 
     else:
         move = user
+        if(move == 'help'):
+            help = discord.Embed(
+                title="Tic-Tac-Toe Commands!",
+                description="Use command '$ttt @user' to start the game\nThe game is played on a 3x3 board, use A-C and 1-3 to select a column and row\nUse command '$ttt [col][row]' to make a move, for example '$ttt a1'")
+            await ctx.send(embed=help)
+            return
+
         if tttGames.get(ctx.author.id):
             if ctx.author.id == tttGames[ctx.author.id].user:
                 if tttGames[ctx.author.id].userTurn == True:
