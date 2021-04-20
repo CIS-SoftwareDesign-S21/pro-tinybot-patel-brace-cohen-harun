@@ -17,7 +17,7 @@ class leaderb:
         lb_info = pd.json_normalize(lb_data['users'])
 #        print(lb_info)
 
-        lb_info.sort_values(['wins'], axis = 0, ascending = True, inplace = True)
+        lb_info.sort_values(['wins'], axis = 0, ascending = False, inplace = True)
 #        print(lb_info)
 
         # Close the JSON File
@@ -30,23 +30,30 @@ class leaderb:
     # Function to Add a New User to the Leaderboard
     def addNewUser(ctx, userID, userName):
 
-        #### Insure User Doesn't already Exist ####
+        print(userID)
 
         # Open the JSON to be Loaded
         with open("leaderboard2.json") as lb_file:
             lb_data = json.load(lb_file)
             print(lb_data)
 
-            temp = lb_data['users']
+        # Assure the User doesn't already Exist in the Leaderboard
+        for i in lb_data['users']:
+            print(i['user_id'])
+            if int(i['user_id']) == userID:
+                print("User Already Exists")
+                return
 
-            # Create User to Append to JSON File
-            nUser = {"user_id": f"{userID}",
-                     "user_name": f"{userName}",
-                     "wins": "0",
-                     "losses": "0"
-                    }
+        temp = lb_data['users']
 
-            temp.append(nUser)
+        # Create User to Append to JSON File
+        nUser = {"user_id": f"{userID}",
+                 "user_name": f"{userName}",
+                 "wins": 0,
+                 "losses": 0
+                }
+
+        temp.append(nUser)
 
         # Append to JSON File
         with open("leaderboard2.json", 'w') as file:
@@ -58,7 +65,11 @@ class leaderb:
         return
 
     # Function to Update the Leaderboards for Wins and Losses
-    def updateLeaderboard(game, winner, loser):
+    def updateLeaderboard(game, winner, loser, winnerName, loserName):
+
+        # Add any New User(s) to the Leaderboard
+        addNewUser(winner, winnerName)
+        addNewUser(loser, loserName)
 
         # Open the JSON to be Loaded
         with open("leaderboard2.json") as lb_file:
@@ -66,9 +77,9 @@ class leaderb:
             print(lb_data)
 
         for i in lb_data['users']:
-            if i['user_id'] == winner:
+            if int(i['user_id']) == winner:
                 i['wins'] += 1
-            if i['user_id'] == loser:
+            if int(i['user_id']) == loser:
                 i['losses'] += 1
 
         # For Testing Purposes

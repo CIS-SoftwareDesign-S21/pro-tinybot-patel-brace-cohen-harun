@@ -46,6 +46,8 @@ def goodbyeMessage():
 
     return goodbye
 
+# 
+
 # Once Bot is Logged In and Ready on Discord Server Notification
 @client.event
 async def on_ready():
