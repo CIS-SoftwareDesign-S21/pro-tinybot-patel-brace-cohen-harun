@@ -58,6 +58,7 @@ def goodbyeMessage():
 
     return goodbye
 
+
 # Once Bot is Logged In and Ready on Discord Server Notification
 @client.event
 async def on_ready():
@@ -137,8 +138,9 @@ async def coinf(ctx):
 
 # Command to Play the Tic-Tac-Toe Minigame
 @client.command()
-#async def ttt(ctx, *, user: discord.User):
 async def ttt(ctx, user: typing.Union[discord.User, str]):
+
+    lb = leaderb()
 
     # Instantiate the Game unless a Move is being Played
     if not isinstance(user, str):
@@ -172,19 +174,35 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
             if ctx.author.id == tttGames[ctx.author.id].user:
                 if tttGames[ctx.author.id].userTurn == True:
                     await ctx.send(tttGames[ctx.author.id].makeMove(move))
+                    if tttGames[ctx.author.id].checkWin == True:
+                        winner = tttGames[ctx.author.id].user
+                        loser = tttGames[ctx.author.id].opponent
+                        winnerName = await client.fetch_user(int(winner))
+                        loserName = await client.fetch_user(int(loser))
+                        print(winnerName)
+                        print(loserName)
+                        lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
 
             elif ctx.author.id == tttGames[ctx.author.id].opponent:
                 if tttGames[ctx.author.id].userTurn == False:
                     await ctx.send(tttGames[ctx.author.id].makeMove(move))
+                    if tttGames[ctx.author.id].checkWin == True:
+                        winner = tttGames[ctx.author.id].opponent
+                        loser = tttGames[ctx.author.id].user
+                        winnerName = await client.fetch_user(int(winner))
+                        loserName = await client.fetch_user(int(loser))
+                        print(winnerName)
+                        print(loserName)
+                        lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
 
             if tttGames[ctx.author.id].checkWin == True or tttGames[ctx.author.id].checkTie == True:
                 await ctx.send(embed=goodbyeMessage())
-                userId: str = tttGames[ctx.author.id].user
-                opId: str = tttGames[ctx.author.id].opponent
+                userId = tttGames[ctx.author.id].user
+                opId = tttGames[ctx.author.id].opponent
                 del tttGames[userId]
                 del tttGames[opId]
                 print(tttGames)
@@ -414,7 +432,7 @@ async def blackjack(ctx, message=None):
 
     return
 
-# Error Handler if Invited User Doesn't exist for Tic-Tac-Toe ################################################################
+# Error Handlers Here ######################################################
 
 # Command to Create User ID in Leaderboard
 @client.command()
@@ -424,29 +442,47 @@ async def newUser(ctx):
 
     # Obtain the User's ID
     userID = ctx.author.id
+    userName = ctx.author
     print(userID)
+    print(userName)
 
     # Send the User ID to Function
-    lb.addNewUser(userID)
+    lb.addNewUser(userID, userName)
 
-    # Open the JSON to be Loaded
-#    with open("leaderboard2.json") as lb_file:
-#        lb_data = json.load(lb_file)
-#        print(lb_data)
+    return
 
-#        temp = lb_data['users']
 
-        # Create User to Append to JSON File
-#        nUser = {"user_name": f"{userID}",
-#                 "wins": "0",
-#                 "losses": "0"
-#                }
+# Command to Display the Leaderboard
+@client.command()
+async def leaderboard(ctx):
 
-#        temp.append(nUser)
+    # Instantiate the Leaderboard Class
+    lb = leaderb()
 
-    # Append to JSON File
-#    with open("leaderboard2.json", 'w') as file:
-#        json.dump(temp, file, indent = 4)
+    # Create an Embedded Variable for Formatting
+    embedVar = discord.Embed(title = "__**Leaderboard**__", timestamp = ctx.message.created_at)
+
+    # Take the Leaderboard Data in as a Variable
+    data = lb.displayLeaderboard()
+
+    # Add the Leaderboard Data as a Field in the Embed
+    embedVar.add_field(name = "Most Wins", value = f'```{data}```', inline = False)
+    
+    await ctx.send(embed = embedVar)
+
+    return
+
+
+# Test Command to Update the Leaderboard
+@client.command()
+async def updateLB(ctx):
+
+    # Instantiate the Leaderboard Class
+    lb = leaderb()
+
+#    lb.addNewUser(144, "Test1")
+#    lb.addNewUser(164, "Test2")
+    lb.updateLeaderboard(144, 164, "Test1", "Test2")
 
     return
 
