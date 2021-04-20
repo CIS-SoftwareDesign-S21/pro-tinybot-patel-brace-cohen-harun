@@ -16,6 +16,13 @@ from blackJack import blackJack
 bot_info_file = open("token.json")
 bot_info = json.load(bot_info_file)
 
+c4Games = dict()
+tttGames = dict()
+btsGames = dict()
+chessGames = dict()
+bjGames = dict()
+cLock = asyncio.Lock()
+
 # Prints out the Invite Link for the Bot
 print("Bot Invite Link: ")
 # print(f"https://discordapp.com/oauth2/authorize?client_id={bot_info['clientid']}&scope=bot&permissions={bot_info['permissions']}")
@@ -33,8 +40,10 @@ gameDictionary = {
     "Mood" : "mood",
     "Coinflip" : "coinf",
     "Tic-Tac-Toe" : "ttt",
+    "BattleShip" : "battleship",
+    "Connect 4" : "c4",
+    "Chess" : "ch",
     "BlackJack" : "blackjack"
-
 }
 
 # Function to Display a Goodbye Message for when a Game Ends
@@ -228,32 +237,47 @@ async def battleship(ctx, message=None):
 
 # Command to Play the BlackJack Game
 @client.command()
-async def blackjack(ctx, message=None):
+async def bj(ctx, message=None):
 
     # Instantiate the Game unless a Game is already being Played
     if not message:
-        global blackjackGame
-        blackjackGame = blackJack()
+        if not bjGames.get(ctx.author.id):
+            bjGames[ctx.author.id] = blackJack()
+            print(bjGames)
+        else:
+            error1 = discord.Embed(
+                title="You are already in a game!")
+            await ctx.channel.send(embed=error1)
+            return
+
+        # global blackjackGame
+        # blackjackGame = blackJack()
         await ctx.send("BlackJack game started!")
-        blackjackGame.start()
+        bjGames[ctx.author.id].start()
         embed = discord.Embed(title="BlackJack", color=0xe60a0a)
         embed.set_thumbnail(
             url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
-        embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
-        embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+        embed.add_field(
+            name="Dealer", value=bjGames[ctx.author.id].dealer, inline=False)
+        embed.add_field(
+            name="Player", value=bjGames[ctx.author.id].player, inline=False)
         embed.set_footer(text="Enter $blackjack H to Hit or $blackjack S to Stand")
         await ctx.send(embed=embed)
+        return
 
     # Make the Move Given
-    if (ctx.message.content[11] == 'H' and blackjackGame.player != []):
+    move = message.upper()
+    if (move == 'H' and bjGames[ctx.author.id].player != []):
         embed = discord.Embed(title="BlackJack", color=0xe60a0a)
-        blackjackGame.choice(ctx.message.content[11])
-        if (blackjackGame.done == 1):
-            result = blackjackGame.result()
+        bjGames[ctx.author.id].choice(move)
+        if (bjGames[ctx.author.id].done == 1):
+            result = bjGames[ctx.author.id].result()
             embed.set_thumbnail(
                 url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
-            embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
-            embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+            embed.add_field(
+                name="Dealer", value=bjGames[ctx.author.id].dealer, inline=False)
+            embed.add_field(
+                name="Player", value=bjGames[ctx.author.id].player, inline=False)
             if (result == 1):
                 embed.set_footer(text="PLAYER WIN")
             elif (result == 2):
@@ -261,22 +285,26 @@ async def blackjack(ctx, message=None):
             else:
                 embed.set_footer(text="PLAYER LOSE")
             await ctx.send(embed=embed)
-            blackjackGame.clean()
+            btsGames[ctx.author.id].clean()
         else:
             embed.set_footer(text="Enter $blackjack H to Hit or $blackjack S to Stand")
             embed.set_thumbnail(url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
-            embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
-            embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+            embed.add_field(
+                name="Dealer", value=bjGames[ctx.author.id].dealer, inline=False)
+            embed.add_field(
+                name="Player", value=bjGames[ctx.author.id].player, inline=False)
             await ctx.send(embed=embed)
-    elif (ctx.message.content[11] == 'S' and blackjackGame.player != []):
-        blackjackGame.choice(ctx.message.content[11])
-        blackjackGame.dealerTurn()
+
+    elif (move == 'S' and bjGames[ctx.author.id].player != []):
+        bjGames[ctx.author.id].choice(move)
+        bjGames[ctx.author.id].dealerTurn()
         embed = discord.Embed(title="BlackJack", color=0xe60a0a)
         embed.set_thumbnail(
             url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
-        embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
-        embed.add_field(name="Player", value=blackjackGame.player, inline=False)
-        result = blackjackGame.result()
+        embed.add_field(name="Dealer", value=bjGames[ctx.author.id].dealer, inline=False)
+        embed.add_field(
+            name="Player", value=bjGames[ctx.author.id].player, inline=False)
+        result = bjGames[ctx.author.id].result()
 
         if (result == 1):
             embed.set_footer(text="PLAYER WIN")
@@ -285,7 +313,11 @@ async def blackjack(ctx, message=None):
         else:
             embed.set_footer(text="PLAYER LOSE")
         await ctx.send(embed=embed)
-        blackjackGame.clean()
+        bjGames[ctx.author.id].clean()
+        await ctx.send(embed=goodbyeMessage())
+        del bjGames[ctx.author.id]
+        print(btsGames)
+
     else:
         await ctx.send("Wrong Input")
 
