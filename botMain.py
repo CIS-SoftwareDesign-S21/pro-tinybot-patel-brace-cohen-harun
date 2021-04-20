@@ -371,7 +371,7 @@ async def c4(ctx, user: typing.Union[discord.User, str]):
                         loser = c4Games[ctx.author.id].user
                         winnerName = await client.fetch_user(int(winner))
                         loserName = await client.fetch_user(int(loser))
-                        lb.updateLeaderboard(winner, loser, winnerName, loserName)
+                        lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
 
@@ -441,12 +441,26 @@ async def bj(ctx, message=None):
                 name="Player", value=bjGames[ctx.author.id].player, inline=False)
             if (result == 1):
                 embed.set_footer(text="PLAYER WIN")
+                winner = ctx.author.id
+                winnerName = ctx.author
+                loser = 0
+                loserName = "Computer"
             elif (result == 2):
                 embed.set_footer(text="DRAW")
             else:
                 embed.set_footer(text="PLAYER LOSE")
+                winner = 0
+                winnerName = "Computer"
+                loser = ctx.author.id
+                loserName = ctx.author
             await ctx.send(embed=embed)
-            btsGames[ctx.author.id].clean()
+            if result != 2:
+                lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
+            bjGames[ctx.author.id].clean()
+            await ctx.send(embed = goodbyeMessage())
+            del bjGames[ctx.author.id]
+            print(bjGames)
+
         else:
             embed.set_footer(text="Enter $bj H to Hit or $bj S to Stand")
             embed.set_thumbnail(url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
@@ -482,11 +496,12 @@ async def bj(ctx, message=None):
             loser = ctx.author.id
             loserName = ctx.author
         await ctx.send(embed=embed)
-        lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
+        if result != 2:
+            lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
         bjGames[ctx.author.id].clean()
         await ctx.send(embed=goodbyeMessage())
         del bjGames[ctx.author.id]
-        print(btsGames)
+        print(bjGames)
 
     else:
         await ctx.send("Wrong Input")
@@ -495,6 +510,8 @@ async def bj(ctx, message=None):
 
 # Error Handlers Here ######################################################
 
+# Old Command to Create a New User in Leaderboard; now is Automated
+'''
 # Command to Create User ID in Leaderboard
 @client.command()
 async def newUser(ctx):
@@ -511,7 +528,7 @@ async def newUser(ctx):
     lb.addNewUser(userID, userName)
 
     return
-
+'''
 
 # Command to Display the Leaderboard
 @client.command()
@@ -533,7 +550,8 @@ async def leaderboard(ctx):
 
     return
 
-
+# Old Test Command to Update the Leaderboard with wins and losses; now handled Automatically once game is finished
+'''
 # Test Command to Update the Leaderboard
 @client.command()
 async def updateLB(ctx):
@@ -546,5 +564,6 @@ async def updateLB(ctx):
     lb.updateLeaderboard(144, 164, "Test1", "Test2")
 
     return
+'''
 
 client.run(bot_info['token'])
