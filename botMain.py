@@ -295,8 +295,8 @@ async def updateLB(ctx):
     # Instantiate the Leaderboard Class
     lb = leaderb()
 
-    lb.addNewUser(144, "Test1")
-    lb.addNewUser(164, "Test2")
+#    lb.addNewUser(144, "Test1")
+#    lb.addNewUser(164, "Test2")
     lb.updateLeaderboard(144, 164, "Test1", "Test2")
 
     return

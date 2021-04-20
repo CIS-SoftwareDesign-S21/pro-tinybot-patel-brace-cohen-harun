@@ -65,11 +65,11 @@ class leaderb:
         return
 
     # Function to Update the Leaderboards for Wins and Losses
-    def updateLeaderboard(game, winner, loser, winnerName, loserName):
+    def updateLeaderboard(ctx, winner, loser, winnerName, loserName):
 
         # Add any New User(s) to the Leaderboard
-#        addNewUser(winner, winnerName)
-#        addNewUser(loser, loserName)
+        leaderb.addNewUser(ctx, winner, winnerName)
+        leaderb.addNewUser(ctx, loser, loserName)
 
         # Open the JSON to be Loaded
         with open("leaderboard2.json") as lb_file:
