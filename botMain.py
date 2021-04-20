@@ -41,7 +41,7 @@ gameDictionary = {
     "Mood" : "mood",
     "Coinflip" : "coinf",
     "Tic-Tac-Toe" : "ttt",
-    "BattleShip" : "battleship",
+    "BattleShip" : "battleship"
     "Connect 4" : "c4",
     "Chess" : "ch",
     "BlackJack" : "blackjack"
@@ -128,7 +128,7 @@ async def coinf(ctx):
         embedVar.set_image(url="https://media1.tenor.com/images/20f12dfa0e544b7c1045c903c572f9ec/tenor.gif?itemid=20771728")
     else:
         embedVar.set_image(url="https://media1.tenor.com/images/51e09c7f9e8051ab944f0aaeed426e80/tenor.gif?itemid=20771732")
-    
+
     # Send the Image
     await ctx.send(embed = embedVar)
 
@@ -277,7 +277,7 @@ async def bts(ctx, message=None):
             help = discord.Embed(
                 title="Battleship Commands!",
                 description="Use command '$bts' to start the game\nThe game is played on a 5x5 board, use A-E and 1-5 to select a row and column\nUse command '$bts [row][col]' to make a move, for example '$bts a1'\nUse command '$bts end' to end the game")
-            await ctx.send(embed=help)    
+            await ctx.send(embed=help)
             return
 
         if btsGames.get(ctx.author.id):
@@ -292,7 +292,7 @@ async def bts(ctx, message=None):
                 userId = btsGames[ctx.author.id].user
                 del btsGames[userId]
                 print(btsGames)
-        else: 
+        else:
             error2 = discord.Embed(
                 title="Start a Battleship game ($bts) to make a move!")
             await ctx.send(embed=error2)
@@ -318,6 +318,12 @@ async def c4(ctx, user: typing.Union[discord.User, str]):
         await ctx.send(f"{ctx.author.mention}, Make your move!")
     else:
         move = user
+        if(move == 'help'):
+            help = discord.Embed(
+                title="Connect 4 Commands!",
+                description="Use command '$c4 @user' to start the game\nThe game is played on a 6X7 board, use A-G to select a column\nUse command '$c4 [col]' to make a move, for example '$c4 a'")
+            await ctx.send(embed=help)
+            return
         if c4Games.get(ctx.author.id):
             if ctx.author.id == c4Games[ctx.author.id].user:
                 if c4Games[ctx.author.id].userTurn == True:
@@ -330,7 +336,7 @@ async def c4(ctx, user: typing.Union[discord.User, str]):
                     await ctx.send(c4Games[ctx.author.id].makeMove(move))
                 else:
                     await ctx.send(f"{ctx.author.mention}, it's not your turn!")
-                    
+
             if c4Games[ctx.author.id].checkWin == True or c4Games[ctx.author.id].checkTie == True:
                 await ctx.send(embed=goodbyeMessage())
                 userId = c4Games[ctx.author.id].user
@@ -342,7 +348,7 @@ async def c4(ctx, user: typing.Union[discord.User, str]):
             error2 = discord.Embed(title = "Start a Connect 4 game to make a move!")
             await ctx.send(embed = error2)
     return
-  
+
 # Command to Play the BlackJack Game
 @client.command()
 async def blackjack(ctx, message=None):
@@ -444,4 +450,4 @@ async def newUser(ctx):
 
     return
 
-client.run(bot_info['token'])   
+client.run(bot_info['token'])
