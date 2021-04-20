@@ -133,7 +133,7 @@ class BattleShipGame:
                 output += '\nI did not account for this option in the code user pick.\n'
 
         except (IndexError, ValueError):
-            return 'Please enter $battleship followed by letter A,B,C,D or E to select row, and integer 1-5 to select column. A good first move would be $battleship b2'
+            return 'Please enter $bts followed by letter A,B,C,D or E to select row, and integer 1-5 to select column. A good move would be $bts b2'
 
         # AFTER YOU MAKE YOUR MOVE, THE COMPUTER MAKES A MOVE
         # pick a random row and col and that is the move
