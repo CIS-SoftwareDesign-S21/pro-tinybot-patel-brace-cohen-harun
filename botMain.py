@@ -36,7 +36,7 @@ gameDictionary = {
     "Mood" : "mood",
     "Coinflip" : "coinf",
     "Tic-Tac-Toe" : "ttt",
-    "Chess" : "ch"
+    "Chess" : "ch",
     "BlackJack" : "blackjack"
   
 }
