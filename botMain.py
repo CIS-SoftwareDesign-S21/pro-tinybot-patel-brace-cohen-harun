@@ -245,25 +245,6 @@ async def newUser(ctx):
     # Send the User ID to Function
     lb.addNewUser(userID, userName)
 
-    # Open the JSON to be Loaded
-#    with open("leaderboard2.json") as lb_file:
-#        lb_data = json.load(lb_file)
-#        print(lb_data)
-
-#        temp = lb_data['users']
-
-        # Create User to Append to JSON File
-#        nUser = {"user_name": f"{userID}",
-#                 "wins": "0",
-#                 "losses": "0"
-#                }
-
-#        temp.append(nUser)
-
-    # Append to JSON File
-#    with open("leaderboard2.json", 'w') as file:
-#        json.dump(temp, file, indent = 4)
-
     return
 
 
