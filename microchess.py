@@ -1,6 +1,7 @@
 from PIL import Image
 from chess_pieces import *
 import io
+import copy
 
 #Images for border surrounding the chess board
 img_A = Image.open('microchess-assets/BORDER/A.png')
@@ -26,6 +27,8 @@ img_whiteRook_onWhite = Image.open('microchess-assets/ON-WHITE/WHITE-ROOK.png')
 img_whiteRook_onBlack = Image.open('microchess-assets/ON-BLACK/WHITE-ROOK.png')
 img_whiteKing_onWhite = Image.open('microchess-assets/ON-WHITE/WHITE-KING.png')
 img_whiteKing_onBlack = Image.open('microchess-assets/ON-BLACK/WHITE-KING.png')
+img_whiteQueen_onWhite = Image.open('microchess-assets/ON-WHITE/WHITE-QUEEN.png')
+img_whiteQueen_onBlack = Image.open('microchess-assets/ON-BLACK/WHITE-QUEEN.png')
 #Images for all of Black's pieces
 img_blackPawn_onWhite = Image.open('microchess-assets/ON-WHITE/BLACK-PAWN.png')
 img_blackPawn_onBlack = Image.open('microchess-assets/ON-BLACK/BLACK-PAWN.png')
@@ -37,44 +40,59 @@ img_blackRook_onWhite = Image.open('microchess-assets/ON-WHITE/BLACK-ROOK.png')
 img_blackRook_onBlack = Image.open('microchess-assets/ON-BLACK/BLACK-ROOK.png')
 img_blackKing_onWhite = Image.open('microchess-assets/ON-WHITE/BLACK-KING.png')
 img_blackKing_onBlack = Image.open('microchess-assets/ON-BLACK/BLACK-KING.png')
+img_blackQueen_onWhite = Image.open('microchess-assets/ON-WHITE/BLACK-QUEEN.png')
+img_blackQueen_onBlack = Image.open('microchess-assets/ON-BLACK/BLACK-QUEEN.png')
 
 
 #creates object representing game; called upon by bot
 class MicrochessGame:
 
-    turn = 0
+    #class constants
     columnIDs = ['A', 'B', 'C', 'D']
     rowIDs = ['5', '4', '3', '2', '1']
-
-    white = { 'P': Pawn(img_whitePawn_onWhite, img_whitePawn_onBlack, 0),
-               'B': Bishop(img_whiteBishop_onWhite, img_whiteBishop_onBlack, 0),
-               'K': Knight(img_whiteKnight_onWhite, img_whiteKnight_onBlack, 0),
-               'R': Rook(img_whiteRook_onWhite, img_whiteRook_onBlack, 0),
-               'S': King(img_whiteKing_onWhite, img_whiteKing_onBlack, 0)
-    }
-
-    black = { 'P': Pawn(img_blackPawn_onWhite, img_blackPawn_onBlack, 1),
-               'B': Bishop(img_blackBishop_onWhite, img_blackBishop_onBlack, 1),
-               'K': Knight(img_blackKnight_onWhite, img_blackKnight_onBlack, 1),
-               'R': Rook(img_blackRook_onWhite, img_blackRook_onBlack, 1),
-               'S': King(img_blackKing_onWhite, img_blackKing_onBlack, 1)
-    }
-
-    players = [white, black]
     playerNames = ['White', 'Black']
+    emptySquares = {'white': Image.open('microchess-assets/ON-WHITE/EMPTY.png'), 'black': Image.open('microchess-assets/ON-BLACK/EMPTY.png')}
 
-    emptySquares = { 'white': Image.open('microchess-assets/ON-WHITE/EMPTY.png'), 'black': Image.open('microchess-assets/ON-BLACK/EMPTY.png')}
+    def __init__(self, whiteUser, blackUser):
+        self.userAccounts = [whiteUser, blackUser]
+        self.turn = 0
+        self.whitePoints = 0
+        self.blackPoints = 0
+        self.playerScores = [self.whitePoints, self.blackPoints]
+        self.gameCompleted = False
 
-    board = [
-        [black['S'], black['K'], black['B'], black['R']],
-        [black['P'], None, None, None],
-        [None, None, None, None],
-        [None, None, None, white['P']],
-        [white['R'], white['B'], white['K'], white['S']]
-    ]
+        self.white = { 'P': Pawn(img_whitePawn_onWhite, img_whitePawn_onBlack, 0),
+                   'B': Bishop(img_whiteBishop_onWhite, img_whiteBishop_onBlack, 0),
+                   'K': Knight(img_whiteKnight_onWhite, img_whiteKnight_onBlack, 0),
+                   'R': Rook(img_whiteRook_onWhite, img_whiteRook_onBlack, 0),
+                   'S': King(img_whiteKing_onWhite, img_whiteKing_onBlack, 0)
+        }
+
+        self.black = { 'P': Pawn(img_blackPawn_onWhite, img_blackPawn_onBlack, 1),
+                   'B': Bishop(img_blackBishop_onWhite, img_blackBishop_onBlack, 1),
+                   'K': Knight(img_blackKnight_onWhite, img_blackKnight_onBlack, 1),
+                   'R': Rook(img_blackRook_onWhite, img_blackRook_onBlack, 1),
+                   'S': King(img_blackKing_onWhite, img_blackKing_onBlack, 1)
+        }
+
+        self.players = [self.white, self.black]
+
+        self.board = [
+            [self.black['S'], self.black['K'], self.black['B'], self.black['R']],
+            [self.black['P'], None, None, None],
+            [None, None, None, None],
+            [None, None, None, self.white['P']],
+            [self.white['R'], self.white['B'], self.white['K'], self.white['S']]
+        ]
+
+        self.queens = [Queen(img_whiteQueen_onWhite, img_whiteQueen_onBlack, 0), Queen(img_blackQueen_onWhite, img_blackQueen_onBlack, 1)]
 
 
     def makeMove(self, move: str):
+        if move == 'forf':
+            self.gameCompleted = True
+            return '%s has forfeited! Game over.' % self.userAccounts[self.turn].mention, False
+
         try:
             selectedPiece = self.players[self.turn][move[0].upper()]
         except:
@@ -82,21 +100,51 @@ class MicrochessGame:
 
         toColumn: int = int(self.columnIDs.index(move[1].upper()))
         toRow: int = self.rowIDs.index(move[2])
+        fromRow: int
+        fromColumn: int
         fromRow, fromColumn = self.findPiece(move[0].upper())
 
         output = ''
 
         if fromRow == None:
-            output += "This piece has been captured."
+            output += 'This piece has been captured.'
             return output, False
+
+        if self.wouldCauseCheck(int(fromRow), int(fromColumn), int(toRow), int(toColumn)):
+            return 'You can\'t put/leave your own King into Check!', False
 
         #print('Attempting to move %s from (%s, %s) to (%s, %s).' % ( selectedPiece.name, fromRow, fromColumn, toRow, toColumn))
 
         if selectedPiece.canMakeMove(int(fromRow), int(fromColumn), int(toRow), int(toColumn), self.board):
+            #if piece is captured, make record of material value
+            if self.board[toRow][toColumn] != None:
+                self.playerScores[self.turn] += self.board[toRow][toColumn].getCaptured()
+                #if king is victim, end game
+                if self.board[toRow][toColumn].getCaptured() == -1:
+                    output += "%s has won the game!" % self.userAccounts[self.turn].mention
+                    self.board[toRow][toColumn] = self.board[fromRow][fromColumn]
+                    self.board[fromRow][fromColumn] = None
+                    self.gameCompleted = True
+                    return output, True
+
+                output += '%s has now captured %d point(s) worth of material.\n' % (self.playerNames[self.turn], self.playerScores[self.turn])
+            #if non-king captured or no capture on turn, move pieces & announce next move
             self.board[toRow][toColumn] = self.board[fromRow][fromColumn]
             self.board[fromRow][fromColumn] = None
+
+            #pawns are queened if they reach the end of the board
+            if(self.board[toRow][toColumn].color == self.turn and self.board[toRow][toColumn].initial == 'P' and (toRow == 0 or toRow == 4) ):
+                self.board[toRow][toColumn] = self.queens[self.turn]
+                self.players[self.turn]['Q'] = self.board[toRow][toColumn]
+                self.players[self.turn]['P'] = None
+                output += '%s has queened their pawn.\n' % self.playerNames[self.turn]
+
+            #if opp. king is in check, add to message
+            if self.isInCheck():
+                output += 'King is in Check. '
+
             self.changeTurn()
-            output += "%s\'s move!" % self.playerNames[self.turn]
+            output += '%s\'s move!' % self.userAccounts[self.turn].mention
             return output, True
         else:
             output += 'This is an invalid move.'
@@ -148,9 +196,64 @@ class MicrochessGame:
         else:
             self.turn = 0
 
+        #print('It is now %s\'s turn.' % self.playerNames[self.turn])
+
     def findPiece(self, c):
         for i in range(len(self.board)):
-            for j in range(len(self.board[i])):
-                if self.board[i][j] == self.players[self.turn][c]:
+            for j in range(len(self.board[i])): #now allows for deep copy in check protection
+                if self.board[i][j] != None and self.board[i][j].color == self.turn and self.board[i][j].initial == c:
                     return i, j
         return None, None
+
+    def isInCheck(self):
+
+        if self.turn == 0:
+            defending = 1
+        else:
+            defending = 0
+        kx = -1
+        ky = -1
+        #find (x,y) coord. of defending side's King
+        for i in range(0, 5):
+            for j in range(0, 4):
+                if self.board[i][j] != None and self.board[i][j].color == defending  and self.board[i][j].initial == 'S':
+                    kx = i
+                    ky = j
+
+        #for each piece on side that just moved, ID any check condition(s)
+        for i in range(0, 5):
+            for j in range(0, 4):
+                if self.board[i][j] != None and self.board[i][j].initial != 'S' and self.board[i][j].color == self.turn:
+                    if self.board[i][j].canMakeMove( i, j, kx, ky, self.board ):
+                        return True
+
+        return False
+
+
+    def wouldCauseCheck(self, fromRow: int, fromColumn: int, toRow: int, toColumn: int ):
+        if self.turn == 0:
+            otherPlayer = 1
+        else:
+            otherPlayer = 0
+
+        #if you have nothing left but King, game will let you
+        #move him into check so that game does not freeze
+        if self.playerScores[otherPlayer] > 11:
+            return False
+
+        bCopy = copy.deepcopy(self.board)
+        self.board[toRow][toColumn] = self.board[fromRow][fromColumn]
+        self.board[fromRow][fromColumn] = None
+
+        self.changeTurn()
+        output = False
+        if self.isInCheck():
+            output = True
+
+        self.board = bCopy
+        self.changeTurn()
+        return output
+
+
+    def isTurnOf(self, userID):
+        return userID == self.userAccounts[self.turn].id
