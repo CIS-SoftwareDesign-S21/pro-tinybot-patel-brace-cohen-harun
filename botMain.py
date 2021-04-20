@@ -52,7 +52,6 @@ def goodbyeMessage():
 
     return goodbye
 
-# 
 
 # Once Bot is Logged In and Ready on Discord Server Notification
 @client.event
@@ -134,7 +133,6 @@ async def coinf(ctx):
 
 # Command to Play the Tic-Tac-Toe Minigame
 @client.command()
-#async def ttt(ctx, *, user: discord.User):
 async def ttt(ctx, user: typing.Union[discord.User, str]):
 
     # Instantiate the Game unless a Move is being Played
