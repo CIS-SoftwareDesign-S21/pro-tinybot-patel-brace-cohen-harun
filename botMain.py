@@ -42,10 +42,10 @@ gameDictionary = {
     "Mood" : "mood",
     "Coinflip" : "coinf",
     "Tic-Tac-Toe" : "ttt",
-    "BattleShip" : "battleship",
+    "BattleShip" : "bts",
     "Connect 4" : "c4",
     "Chess" : "ch",
-    "BlackJack" : "blackjack"
+    "BlackJack" : "bj"
 }
 
 # Function to Display a Goodbye Message for when a Game Ends
@@ -123,7 +123,8 @@ async def coinf(ctx):
 
     # Generate Result and Embed Title
     result = coinflip()
-    embedVar.title = ctx.author.mention
+    embedVar.title = "@"+str(ctx.author)
+
 
     # Display Appropriate Image
     if result == "HEADS":
@@ -414,12 +415,19 @@ async def bj(ctx, message=None):
             name="Dealer", value=bjGames[ctx.author.id].dealer, inline=False)
         embed.add_field(
             name="Player", value=bjGames[ctx.author.id].player, inline=False)
-        embed.set_footer(text="Enter $blackjack H to Hit or $blackjack S to Stand")
+        embed.set_footer(text="Enter $bj H to Hit or $bj S to Stand")
         await ctx.send(embed=embed)
         return
 
     # Make the Move Given
     move = message.upper()
+    if move == 'HELP':
+            help = discord.Embed(
+                title="Black Jack Commands!",
+                description="Use command '$bj' to start the game\nUse command '$bj h' to get another card or '$bj s' to keep your cards'")
+            await ctx.send(embed=help)
+            return
+
     if (move == 'H' and bjGames[ctx.author.id].player != []):
         embed = discord.Embed(title="BlackJack", color=0xe60a0a)
         bjGames[ctx.author.id].choice(move)
@@ -440,7 +448,7 @@ async def bj(ctx, message=None):
             await ctx.send(embed=embed)
             btsGames[ctx.author.id].clean()
         else:
-            embed.set_footer(text="Enter $blackjack H to Hit or $blackjack S to Stand")
+            embed.set_footer(text="Enter $bj H to Hit or $bj S to Stand")
             embed.set_thumbnail(url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
             embed.add_field(
                 name="Dealer", value=bjGames[ctx.author.id].dealer, inline=False)
