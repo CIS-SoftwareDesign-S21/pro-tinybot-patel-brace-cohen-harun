@@ -123,7 +123,8 @@ async def coinf(ctx):
 
     # Generate Result and Embed Title
     result = coinflip()
-    embedVar.title = ctx.author.mention
+    embedVar.title = "@"+str(ctx.author)
+
 
     # Display Appropriate Image
     if result == "HEADS":
