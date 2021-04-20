@@ -271,6 +271,8 @@ async def ch(ctx, user: typing.Union[discord.User, str]):
 @client.command()
 async def bts(ctx, message=None):
 
+    lb = leaderb()
+
     # Instantiate the Game unless a Game is already being Played
     if not message:
         if not btsGames.get(ctx.author.id):
@@ -305,6 +307,7 @@ async def bts(ctx, message=None):
                 btsGames[ctx.author.id].endGame = True
             else:
                 await ctx.send(btsGames[ctx.author.id].makeMove(move))
+#                if btsGames[ctx.author.id].checkWin == True:
 
             if btsGames[ctx.author.id].checkWin == True or btsGames[ctx.author.id].endGame == True:
                 await ctx.send(embed=goodbyeMessage())
