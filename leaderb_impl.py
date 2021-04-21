@@ -44,7 +44,7 @@ class sqliteLeaderboard():
         return
 
     # Function to Insert a User into the Users Table
-    def insertUser(ctx, conn, userID, userName):
+    def insert_user(ctx, conn, userID, userName):
 
         # Create a Cursor Object from the Connection
         cursor = conn.cursor()
@@ -64,7 +64,7 @@ class sqliteLeaderboard():
 
 
     # Function to Update the Leaderboard Wins and Loses
-    def updateLeaderb(ctx, conn, winnerID, loserID, winnerName, loserName):
+    def update_leaderboard(ctx, conn, winnerID, loserID, winnerName, loserName):
 
         # Create a Cursor Object from the Connection
         cursor = conn.cursor()
@@ -92,7 +92,21 @@ class sqliteLeaderboard():
         return
 
 
-    # Function to close the Connection
+    # Function to Display the Leaderboard
+    def display_leaderboard(ctx, conn):
+
+        # Create a Cursor Object from the Connection
+        cursor = conn.cursor()
+
+        # Fetching all the Rows of Data and Order by Wins
+        cursor.execute('''SELECT * FROM USERS ORDER BY WINS''')
+        
+        # Display for Testing Purposes
+        print(cursor.fetchall())
+
+        return
+
+    # Function to Close the Connection
     def close_connection(ctx, conn):
 
         # Try to Close the Connection
