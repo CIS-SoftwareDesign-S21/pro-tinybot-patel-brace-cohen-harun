@@ -40,7 +40,9 @@ The quarantine has made meeting up in person quite hard so this seemed to be the
 **Tic Tac Toe** - A rendition the classic game played in Discord chat.  
 **Micro-chess** - A simplified chess game on 4x5 board. </br>
 **Coin Flip** - A simple game of heads or tails. </br>
-**Battleship** - A strategy type guessing game for two players.
+**Battleship** - A strategy type guessing game for two players.</br>
+**BlackJack** - A card game where a player compete against a dealer for higher value cards, but not exceeding 21. </br>
+**Connect 4** - A connection board game where players compete to connect 4 pieces.</br>
 
 # How to Install
 Download files and run command "python3 botMain.py"  
