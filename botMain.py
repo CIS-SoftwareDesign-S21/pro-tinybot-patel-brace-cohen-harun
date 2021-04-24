@@ -12,6 +12,7 @@ from battleShip import BattleShipGame
 from connect4 import Connect4Game
 from leaderboard_impl import leaderb
 from blackJack import blackJack
+from leaderb_impl import sqliteLeaderboard
 
 
 # Bot Takes Token, ClientID, and Permissions from JSON File
@@ -565,5 +566,47 @@ async def updateLB(ctx):
 
     return
 '''
+
+
+# Command to Test the New Leaderboard
+@client.command()
+async def newLB(ctx):
+
+    nLB = sqliteLeaderboard()
+
+    # Create the Connection to the Leaderboard Database
+    global conn
+    conn = nLB.create_connection()
+    print("Connected to Database...")
+
+    # Create the Table to the Leaderboard
+    nLB.create_table(conn)
+    print("Database Table Created...")
+
+    # Insert a User into the Leaderboard
+    nLB.insert_user(conn, ctx.author.id, str(ctx.author))
+    nLB.insert_user(conn, 144, "Test1")
+    print("Users Inserted into Database...")
+
+    # Display the Leaderboard after Inserting Users
+#    await ctx.send(nLB.display_leaderboard(conn))
+    nLB.display_leaderboard(conn)
+    print("Leaderboard Displayed...")
+
+    # Update the Leaderboard for Winner and Loser
+    nLB.update_leaderboard(conn, ctx.author.id, 144, ctx.author, "Test1")
+    print("Database Updated...")
+
+    # Display the Leaderboard after Update
+#    await ctx.send(nLB.display_leaderboard(conn))
+    nLB.display_leaderboard(conn)
+    print("Leaderboard Displayed...")
+
+    # Close the Connection to the Leaderboard Database
+    nLB.close_connection(conn)
+    print("Disconnected to Database...")
+
+    return
+
 
 client.run(bot_info['token'])

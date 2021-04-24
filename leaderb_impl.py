@@ -5,7 +5,7 @@ from sqlite3 import Error
 class sqliteLeaderboard():
 
     # Function to Create the Database Connection to the SQLite Database
-    def create_connection():
+    def create_connection(ctx):
 
         # Instantiate Connection Variable
         conn = None
@@ -22,7 +22,7 @@ class sqliteLeaderboard():
 
     
     # Function to Create a Table in the SQLite Database
-    def create_table(conn):
+    def create_table(ctx, conn):
 
         # Create a Cursor Object from the Connection
         cursor = conn.cursor()
@@ -30,7 +30,7 @@ class sqliteLeaderboard():
         # Variables for Creating the Table for Users on the Leaderboard
         sql_create_user_table = ''' CREATE TABLE IF NOT EXISTS USERS(
             USER_ID INTEGER UNIQUE,
-            USER_NAME TEXT NOT NULL,
+            USER_NAME TEXT,
             WINS INTEGER,
             LOSSES INTEGER
         )'''
@@ -51,9 +51,8 @@ class sqliteLeaderboard():
 
         # Try to Insert the User into the User Table
         try:
-            cursor.execute(''' INSERT INTO USERS(USER_ID, USER_NAME, WINS, LOSSES)
-                VALUES (f'{userID}', {userName}, 0, 0)
-            ''')
+#            cursor.execute(''' INSERT INTO USERS(USER_ID, USER_NAME, WINS, LOSSES) VALUES ({userID}, {userName}, 0, 0)''')
+            cursor.execute("INSERT INTO USERS(USER_ID, USER_NAME, WINS, LOSSES) VALUES (?, ?, ?, ?)", (userID, userName, 0, 0))
         except Error as e:
             print(e)
 
@@ -75,10 +74,12 @@ class sqliteLeaderboard():
         print(cursor.fetchall())
 
         # Make the Update
-        sql_update_winner = '''UPDATE USERS SET WINS=WINS+1 WHERE USER_ID={winnerID}'''
-        cursor.execute(sql_update_winner)
-        sql_update_loser = '''UPDATE USERS SET LOSSES=LOSSES+1 WHERE USER_ID={loserID}'''
-        cursor.execute(sql_update_loser)
+#        sql_update_winner = '''UPDATE USERS SET WINS=WINS+1 WHERE USER_ID={winnerID}'''
+#        cursor.execute(sql_update_winner)
+        cursor.execute("UPDATE USERS SET WINS=WINS+1 WHERE USER_ID=%d" % (winnerID))
+#        sql_update_loser = '''UPDATE USERS SET LOSSES=LOSSES+1 WHERE USER_ID={loserID}'''
+#        cursor.execute(sql_update_loser)
+        cursor.execute("UPDATE USERS SET WINS=WINS+1 WHERE USER_ID=%d" % (loserID))
         print("Update Completed")
 
         # Fetching all the Rows of Data after the Update
@@ -99,7 +100,7 @@ class sqliteLeaderboard():
         cursor = conn.cursor()
 
         # Fetching all the Rows of Data and Order by Wins
-        cursor.execute('''SELECT * FROM USERS ORDER BY WINS''')
+        cursor.execute('''SELECT * FROM USERS ORDER BY WINS DESC''')
         
         # Display for Testing Purposes
         print(cursor.fetchall())

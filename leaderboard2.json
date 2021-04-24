@@ -15,8 +15,20 @@
         {
             "user_id": "154378512306929675",
             "user_name": "Xyeles#0393",
+            "wins": 2,
+            "losses": 2
+        },
+        {
+            "user_id": "834076289942028368",
+            "user_name": "XyelesTest#5697",
             "wins": 1,
             "losses": 0
+        },
+        {
+            "user_id": "0",
+            "user_name": "Computer",
+            "wins": 1,
+            "losses": 1
         }
     ]
 }
