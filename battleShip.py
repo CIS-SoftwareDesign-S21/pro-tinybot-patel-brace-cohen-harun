@@ -44,6 +44,8 @@ class BattleShipGame:
         self.putShip(self.userBoard, 2)  # put in length 2 ship
 
     rowIDs = ['A', 'B', 'C', 'D', 'E']
+    cols = [":one:", ":two:", ":three:", ":four:", ":five:"]
+
 
     def putShip(self, board, sizeOfShip):  # put a ship on a board
         orientation = 0
@@ -160,15 +162,16 @@ class BattleShipGame:
 
         # create text representation of the board
         output += "\nWhat you know about the opponent's board: \n"
+        output += ":ship: 🇦 🇧 🇨 🇩 🇪\n"
         for i in range(0, 5):
-            output += ('%s %s %s %s %s\n' % (
-                self.comBoardToShowUser[i][0], self.comBoardToShowUser[i][1], self.comBoardToShowUser[i][2],
+            output += ('%s %s %s %s %s %s\n' % (
+                self.cols[i], self.comBoardToShowUser[i][0], self.comBoardToShowUser[i][1], self.comBoardToShowUser[i][2],
                 self.comBoardToShowUser[i][3], self.comBoardToShowUser[i][4]))
-
         output += "\nYour board: \n"
+        output += ":ship: 🇦 🇧 🇨 🇩 🇪\n"
         for i in range(0, 5):
-            output += ('%s %s %s %s %s\n' % (
-                self.userBoard[i][0], self.userBoard[i][1], self.userBoard[i][2], self.userBoard[i][3],
+            output += ('%s %s %s %s %s %s\n' % (
+                self.cols[i], self.userBoard[i][0], self.userBoard[i][1], self.userBoard[i][2], self.userBoard[i][3],
                 self.userBoard[i][4]))
 
         #output += "\nThe computer's real board: \n"
