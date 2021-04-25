@@ -12,6 +12,7 @@ from battleShip import BattleShipGame
 from connect4 import Connect4Game
 from leaderboard_impl import leaderb
 from blackJack import blackJack
+from leaderb_impl import sqliteLeaderboard
 
 
 # Bot Takes Token, ClientID, and Permissions from JSON File
@@ -41,10 +42,10 @@ gameDictionary = {
     "Hello" : "hello",
     "Mood" : "mood",
     "Coinflip" : "coinf",
-    "Tic-Tac-Toe" : "ttt",
+    "Tic-Tac-Toe" : "ttt @user",
     "BattleShip" : "bts",
-    "Connect 4" : "c4",
-    "Chess" : "ch",
+    "Connect 4" : "c4 @user",
+    "Chess" : "ch @user",
     "BlackJack" : "bj"
 }
 
@@ -74,13 +75,13 @@ async def games(ctx):
 
     # Variable to Hold the List
     gamesList = ""
-
     # Appends all Available Commands/Games to Play to a String (Acting as a List to Display)
     for game in gameDictionary:
         gamesList += game + ':\t$' + gameDictionary[game] + "\n"
 
     # Sends the List of Available Sounds to Play to the Discord Channel
-    await ctx.send(gamesList)
+    games = discord.Embed(title= "Game List!\n", description= gamesList, color = 15158332)
+    await ctx.send(embed=games)
 
 
 # Says Hello to User, if Specified, who prompted the Command
@@ -214,6 +215,11 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
             await ctx.send(embed=error2)
     return
 
+@ttt.error
+async def ttt_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Use $ttt @user to start a game or $ttt [col][row] to make a move!")
+
 
 # Command to Play the MicroChess Minigame
 @client.command()
@@ -267,6 +273,11 @@ async def ch(ctx, user: typing.Union[discord.User, str]):
 
     return
 
+@ch.error
+async def ch_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Use $ch @user to start a game or $ch [piece][col][row] to make a move!")
+
 
 # Command to Play the Battleship Game
 @client.command()
@@ -288,6 +299,7 @@ async def bts(ctx, message=None):
         start = discord.Embed(title="Battleship Game Started!",
                               description="Enter $bts \'Location\' To Make A Move\nExample: $bts a1", color=15158332)
         await ctx.send(embed=start)
+        await ctx.channel.send(btsGames[ctx.author.id].initBoard())
 
     # Make the Move Given
     else:
@@ -386,6 +398,12 @@ async def c4(ctx, user: typing.Union[discord.User, str]):
             error2 = discord.Embed(title = "Start a Connect 4 game to make a move!")
             await ctx.send(embed = error2)
     return
+
+@c4.error
+async def c4_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Use $c4 @user to start a game or $c4 [col] to make a move!")
+
 
 # Command to Play the BlackJack Game
 @client.command()
@@ -565,5 +583,47 @@ async def updateLB(ctx):
 
     return
 '''
+
+
+# Command to Test the New Leaderboard
+@client.command()
+async def newLB(ctx):
+
+    nLB = sqliteLeaderboard()
+
+    # Create the Connection to the Leaderboard Database
+    global conn
+    conn = nLB.create_connection()
+    print("Connected to Database...")
+
+    # Create the Table to the Leaderboard
+    nLB.create_table(conn)
+    print("Database Table Created...")
+
+    # Insert a User into the Leaderboard
+    nLB.insert_user(conn, ctx.author.id, str(ctx.author))
+    nLB.insert_user(conn, 144, "Test1")
+    print("Users Inserted into Database...")
+
+    # Display the Leaderboard after Inserting Users
+#    await ctx.send(nLB.display_leaderboard(conn))
+    nLB.display_leaderboard(conn)
+    print("Leaderboard Displayed...")
+
+    # Update the Leaderboard for Winner and Loser
+    nLB.update_leaderboard(conn, ctx.author.id, 144, ctx.author, "Test1")
+    print("Database Updated...")
+
+    # Display the Leaderboard after Update
+#    await ctx.send(nLB.display_leaderboard(conn))
+    nLB.display_leaderboard(conn)
+    print("Leaderboard Displayed...")
+
+    # Close the Connection to the Leaderboard Database
+    nLB.close_connection(conn)
+    print("Disconnected to Database...")
+
+    return
+
 
 client.run(bot_info['token'])

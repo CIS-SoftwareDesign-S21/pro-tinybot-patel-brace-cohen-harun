@@ -54,16 +54,16 @@ class TicTacToeGame:
         victoryStatus = str(self.checkForVictory())
         if(victoryStatus != 'None'):
             if(self.userTurn == True):
-                return output + "\n\n<@!" + str(self.user) + ">, Wins!"
+                return output + "\n\n<@!" + str(self.user) + ">, wins against <@!" + str(self.opponent) + ">!"
             else:
-                return output + "\n\n<@!" + str(self.opponent) + ">, Wins!"
+                return output + "\n\n<@!" + str(self.opponent) + ">, wins against <@!" + str(self.user) + ">!"
 
         # Check if tie
         self.squaresFilled += 1
         if self.squaresFilled == 9 and not "win" in victoryStatus:
             self.checkTie = True
             self.gameEnd = True
-            return output + '\n\nIt\'s a tie!'
+            return output + "\n\nIt's a tie between <@!" + str(self.user) + "> and <@!" + str(self.opponent) + ">!"
 
         # Change turns and announce whose turn it is
         if self.userTurn == True:
