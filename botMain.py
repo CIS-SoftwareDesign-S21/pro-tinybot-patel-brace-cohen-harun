@@ -42,10 +42,10 @@ gameDictionary = {
     "Hello" : "hello",
     "Mood" : "mood",
     "Coinflip" : "coinf",
-    "Tic-Tac-Toe" : "ttt",
+    "Tic-Tac-Toe" : "ttt @user",
     "BattleShip" : "bts",
-    "Connect 4" : "c4",
-    "Chess" : "ch",
+    "Connect 4" : "c4 @user",
+    "Chess" : "ch @user",
     "BlackJack" : "bj"
 }
 
@@ -75,13 +75,13 @@ async def games(ctx):
 
     # Variable to Hold the List
     gamesList = ""
-
     # Appends all Available Commands/Games to Play to a String (Acting as a List to Display)
     for game in gameDictionary:
         gamesList += game + ':\t$' + gameDictionary[game] + "\n"
 
     # Sends the List of Available Sounds to Play to the Discord Channel
-    await ctx.send(gamesList)
+    games = discord.Embed(title= "Game List!\n", description= gamesList, color = 15158332)
+    await ctx.send(embed=games)
 
 
 # Says Hello to User, if Specified, who prompted the Command
