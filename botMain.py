@@ -299,6 +299,7 @@ async def bts(ctx, message=None):
         start = discord.Embed(title="Battleship Game Started!",
                               description="Enter $bts \'Location\' To Make A Move\nExample: $bts a1", color=15158332)
         await ctx.send(embed=start)
+        await ctx.channel.send(btsGames[ctx.author.id].initBoard())
 
     # Make the Move Given
     else:

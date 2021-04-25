@@ -47,6 +47,8 @@ class BattleShipGame:
     cols = [":one:", ":two:", ":three:", ":four:", ":five:"]
 
 
+
+
     def putShip(self, board, sizeOfShip):  # put a ship on a board
         orientation = 0
         # choose a random number 1 or 2, 1 for horizontal 2 for vertical
@@ -107,7 +109,7 @@ class BattleShipGame:
         if(compWon == 1):  # if the computer won
             return "The computer won!"
         elif(userWon == 1):
-            return "You won!"
+            return "<@!" + str(self.user) + ">, You won!"
         else:  # if neither has won yet
             return "no"
 
@@ -124,13 +126,13 @@ class BattleShipGame:
             elif self.comBoard[self.rowIDs.index(move[0].upper())][int(move[1]) - 1] == '⬜':
                 self.comBoardToShowUser[self.rowIDs.index(move[0].upper())][int(
                     move[1]) - 1] = '🟦'  # show the user that they hit an empty spot
-                output += "\nYou missed\n"
+                output += "\n<@!" + str(self.user) + ">, you missed\n"
                 #self.comBoard[ self.rowIDs.index( move[0].upper() ) ][ int( move[1] ) - 1] = self.turn
             # they hit a part of a ship
             elif(self.comBoard[self.rowIDs.index(move[0].upper())][int(move[1]) - 1] == ':sailboat:️️'):
                 self.comBoardToShowUser[self.rowIDs.index(move[0].upper())][int(
                     move[1]) - 1] = '🔥'  # show the user that they hit a ship
-                output += "\nYou hit their ship\n"
+                output += "\n<@!" + str(self.user) + ">, you hit their ship\n"
             else:
                 output += '\nI did not account for this option in the code user pick.\n'
 
@@ -187,5 +189,23 @@ class BattleShipGame:
             output += "\n" + str(victoryStatus) + "\n"
             self.checkWin = True
             return output
+
+        return output
+
+    def initBoard(self):
+        output: str = '\n'
+        # Create text representation of board
+        output += "\nWhat you know about the opponent's board: \n"
+        output += ":ship: 🇦 🇧 🇨 🇩 🇪\n"
+        for i in range(0, 5):
+            output += ('%s %s %s %s %s %s\n' % (
+                self.cols[i], self.comBoardToShowUser[i][0], self.comBoardToShowUser[i][1], self.comBoardToShowUser[i][2],
+                self.comBoardToShowUser[i][3], self.comBoardToShowUser[i][4]))
+        output += "\nYour board: \n"
+        output += ":ship: 🇦 🇧 🇨 🇩 🇪\n"
+        for i in range(0, 5):
+            output += ('%s %s %s %s %s %s\n' % (
+                self.cols[i], self.userBoard[i][0], self.userBoard[i][1], self.userBoard[i][2], self.userBoard[i][3],
+                self.userBoard[i][4]))
 
         return output
