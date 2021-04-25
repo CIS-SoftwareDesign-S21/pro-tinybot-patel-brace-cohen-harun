@@ -215,6 +215,11 @@ async def ttt(ctx, user: typing.Union[discord.User, str]):
             await ctx.send(embed=error2)
     return
 
+@ttt.error
+async def ttt_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Use $ttt @user to start a game or $ttt [col][row] to make a move!")
+
 
 # Command to Play the MicroChess Minigame
 @client.command()
@@ -267,6 +272,11 @@ async def ch(ctx, user: typing.Union[discord.User, str]):
             del chessGames[str(blackPlayer.id)]
 
     return
+
+@ch.error
+async def ch_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Use $ch @user to start a game or $ch [piece][col][row] to make a move!")
 
 
 # Command to Play the Battleship Game
@@ -387,6 +397,12 @@ async def c4(ctx, user: typing.Union[discord.User, str]):
             error2 = discord.Embed(title = "Start a Connect 4 game to make a move!")
             await ctx.send(embed = error2)
     return
+
+@c4.error
+async def c4_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Use $c4 @user to start a game or $c4 [col] to make a move!")
+
 
 # Command to Play the BlackJack Game
 @client.command()

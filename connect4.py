@@ -42,15 +42,15 @@ class Connect4Game:
             self.checkWin = True
             self.gameEnd = True
             if(self.userTurn == True):
-                return output + "\n\n" + victoryStatus + ", <@!" + str(self.user) + ">, Wins!"
+                return output + "\n\n" + victoryStatus + ", <@!" + str(self.user) + ">, wins against <@!" + str(self.opponent) + ">!"
             else:
-                return output + "\n\n" + victoryStatus + ", <@!" + str(self.opponent) + ">, Wins!"
+                return output + "\n\n" + victoryStatus + ", <@!" + str(self.opponent) + ">, wins against <@!" + str(self.user) + ">!"
 
         self.slotsFilled += 1
         if self.slotsFilled == 42:
             self.gameEnd = True
             self.checkTie = True
-            return output + "\n\nIt's a Tie"
+            return output + "\n\nIt's a tie between <@!" + str(self.user) + "> and <@!" + str(self.opponent) + ">!"
 
         if self.userTurn == True:
             self.userTurn = False
