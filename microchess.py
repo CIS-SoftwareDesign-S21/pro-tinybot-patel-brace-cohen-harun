@@ -111,7 +111,7 @@ class MicrochessGame:
             return output, False
 
         if self.wouldCauseCheck(int(fromRow), int(fromColumn), int(toRow), int(toColumn)):
-            return 'You can\'t put/leave your own King into Check!', False
+            return 'You can\'t put/leave your own King in Check!', False
 
         #print('Attempting to move %s from (%s, %s) to (%s, %s).' % ( selectedPiece.name, fromRow, fromColumn, toRow, toColumn))
 
@@ -128,6 +128,14 @@ class MicrochessGame:
                     return output, True
 
                 output += '%s has now captured %d point(s) worth of material.\n' % (self.playerNames[self.turn], self.playerScores[self.turn])
+                # if only Kings left, declare stalemate
+                if self.playerScores[0] >= 12 and self.playerScores[1] >= 12:
+                    output += 'Stalemate! Game over.'
+                    self.board[toRow][toColumn] = self.board[fromRow][fromColumn]
+                    self.board[fromRow][fromColumn] = None
+                    self.gameCompleted = True
+                    return output, True
+
             #if non-king captured or no capture on turn, move pieces & announce next move
             self.board[toRow][toColumn] = self.board[fromRow][fromColumn]
             self.board[fromRow][fromColumn] = None

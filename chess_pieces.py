@@ -151,6 +151,15 @@ class King(ChessPiece):
     def canMakeMove( self, fromRow: int, fromColumn: int, toRow: int, toColumn: int, board ) -> bool:
         if super(King, self).canMakeMove( fromRow, fromColumn, toRow, toColumn, board ) == False:
             return False
+        #can't move King next to opponent's King
+        #handled here as opposed to isInCheck to avoid endless recursion call
+        for i in range(-1, 2):
+            for j in range(-1, 2):
+                r = toRow + i
+                c = toColumn + j
+                if r >= 0 and r <= 4 and c >= 0 and c <= 3:
+                    if board[r][c] != None and board[r][c].value == -1 and board[r][c].color != self.color:
+                        return False
 
         distColumn = abs(fromColumn - toColumn)
         distRow = abs(fromRow - toRow)
