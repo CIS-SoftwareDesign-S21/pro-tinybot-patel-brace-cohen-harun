@@ -1,17 +1,34 @@
-[
-    {
-        "user_name": "",
-        "wins": "",
-        "losses": ""
-    },
-    {
-        "user_name": "",
-        "wins": "",
-        "losses": ""
-    },
-    {
-        "user_name": "154378512306929675",
-        "wins": "0",
-        "losses": "0"
-    }
-]
+{
+    "users": [
+        {
+            "user_id": "144",
+            "user_name": "Test1",
+            "wins": 0,
+            "losses": 0
+        },
+        {
+            "user_id": "164",
+            "user_name": "Test2",
+            "wins": 0,
+            "losses": 0
+        },
+        {
+            "user_id": "154378512306929675",
+            "user_name": "Xyeles#0393",
+            "wins": 2,
+            "losses": 2
+        },
+        {
+            "user_id": "834076289942028368",
+            "user_name": "XyelesTest#5697",
+            "wins": 1,
+            "losses": 0
+        },
+        {
+            "user_id": "0",
+            "user_name": "Computer",
+            "wins": 1,
+            "losses": 1
+        }
+    ]
+}

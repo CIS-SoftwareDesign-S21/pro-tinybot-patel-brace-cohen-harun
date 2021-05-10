@@ -9,14 +9,21 @@ from coinflip import coinflip
 from tic_tac_toe import TicTacToeGame
 from microchess import MicrochessGame
 from battleShip import BattleShipGame
+from connect4 import Connect4Game
 from leaderboard_impl import leaderb
 from blackJack import blackJack
+from leaderb_impl import sqliteLeaderboard
+
 
 # Bot Takes Token, ClientID, and Permissions from JSON File
 bot_info_file = open("token.json")
 bot_info = json.load(bot_info_file)
 
+c4Games = dict()
+tttGames = dict()
+btsGames = dict()
 chessGames = dict()
+bjGames = dict()
 cLock = asyncio.Lock()
 
 # Prints out the Invite Link for the Bot
@@ -35,9 +42,11 @@ gameDictionary = {
     "Hello" : "hello",
     "Mood" : "mood",
     "Coinflip" : "coinf",
-    "Tic-Tac-Toe" : "ttt",
-    "Chess" : "ch",
-    "BlackJack" : "blackjack"
+    "Tic-Tac-Toe" : "ttt @user",
+    "BattleShip" : "bts",
+    "Connect 4" : "c4 @user",
+    "Chess" : "ch @user",
+    "BlackJack" : "bj"
   
 }
 
@@ -51,6 +60,7 @@ def goodbyeMessage():
     goodbye.title = "Thank you for playing!"
 
     return goodbye
+
 
 # Once Bot is Logged In and Ready on Discord Server Notification
 @client.event
@@ -66,13 +76,13 @@ async def games(ctx):
 
     # Variable to Hold the List
     gamesList = ""
-
     # Appends all Available Commands/Games to Play to a String (Acting as a List to Display)
     for game in gameDictionary:
         gamesList += game + ':\t$' + gameDictionary[game] + "\n"
 
     # Sends the List of Available Sounds to Play to the Discord Channel
-    await ctx.send(gamesList)
+    games = discord.Embed(title= "Game List!\n", description= gamesList, color = 15158332)
+    await ctx.send(embed=games)
 
 
 # Says Hello to User, if Specified, who prompted the Command
@@ -103,7 +113,6 @@ async def bye(ctx, message=None):
 # Bot tells you its Mood
 @client.command()
 async def mood(ctx):
-
     await ctx.send('I am good! Thank you for asking!')
     return
 
@@ -116,14 +125,15 @@ async def coinf(ctx):
 
     # Generate Result and Embed Title
     result = coinflip()
-    embedVar.title = result
+    embedVar.title = "@"+str(ctx.author)
+
 
     # Display Appropriate Image
     if result == "HEADS":
         embedVar.set_image(url="https://media1.tenor.com/images/20f12dfa0e544b7c1045c903c572f9ec/tenor.gif?itemid=20771728")
     else:
         embedVar.set_image(url="https://media1.tenor.com/images/51e09c7f9e8051ab944f0aaeed426e80/tenor.gif?itemid=20771732")
-    
+
     # Send the Image
     await ctx.send(embed = embedVar)
 
@@ -132,52 +142,84 @@ async def coinf(ctx):
 
 # Command to Play the Tic-Tac-Toe Minigame
 @client.command()
-#async def ttt(ctx, *, user: discord.User):
 async def ttt(ctx, user: typing.Union[discord.User, str]):
+
+    lb = leaderb()
 
     # Instantiate the Game unless a Move is being Played
     if not isinstance(user, str):
-        global game
-        opponent = user.id
 
-        # For Testing Purposes
-        print(opponent) 
+        if not tttGames.get(ctx.author.id) and not tttGames.get(user.id):
+            tttGames[ctx.author.id] = TicTacToeGame(ctx.author.id, user.id)
+            tttGames[user.id] = tttGames[ctx.author.id]
+            print(tttGames)
+        else:
+            error1 = discord.Embed(
+                title="You or the player you invited are already in a game!")
+            await ctx.channel.send(embed=error1)
+            return
 
-        userTurn = True
-        checkWin = False
-        gameEnd = False
-        checkTie = False
-        game = TicTacToeGame(int(ctx.author.id), int(opponent), bool(userTurn), bool(checkWin), bool(gameEnd), bool(checkTie))
-        game.clearBoard()
-        await ctx.send('Tic-Tac-Toe game started!\nEnter #\'Location\' to Move')
-        await ctx.send('Example: #A1')
-        await ctx.send(game.initBoard())
+        start = discord.Embed(title="Tic-Tac-Toe Game Started!",
+                              description="Enter $ttt \'Location\' To Make A Move\nExample: $ttt a1", color=15158332)
+        await ctx.send(embed=start)
+        await ctx.channel.send(tttGames[ctx.author.id].initBoard())
         await ctx.send(f"{ctx.author.mention}, Make your move!")
-    # Make the Move Given
+
     else:
         move = user
-        print(move)
-        if not game.gameEnd:
-            if ctx.author.id == game.user:
-                if game.userTurn == True:
-                    await ctx.send(game.makeMove(move))
-                    if game.checkWin == True:
-                        await ctx.send(embed = goodbyeMessage())
-                else:
-                    await ctx.send(f"{ctx.author.mention}, it's not your turn!")
-            elif ctx.author.id == game.opponent:
-                if game.userTurn == False:
-                    await ctx.send(game.makeMove(move))
-                    if game.checkWin == True:
-                        await ctx.send(embed = goodbyeMessage())
-                else:
-                    await ctx.send(f"{ctx.author.mention}, it's not your turn!")
-            else:
-                await ctx.send("Didn't recognize player!")
-        else:
-            await ctx.send("Start a Tic-Tac-Toe game to make a move!")
+        if(move == 'help'):
+            help = discord.Embed(
+                title="Tic-Tac-Toe Commands!",
+                description="Use command '$ttt @user' to start the game\nThe game is played on a 3x3 board, use A-C and 1-3 to select a column and row\nUse command '$ttt [col][row]' to make a move, for example '$ttt a1'")
+            await ctx.send(embed=help)
+            return
 
+        if tttGames.get(ctx.author.id):
+            if ctx.author.id == tttGames[ctx.author.id].user:
+                if tttGames[ctx.author.id].userTurn == True:
+                    await ctx.send(tttGames[ctx.author.id].makeMove(move))
+                    if tttGames[ctx.author.id].checkWin == True:
+                        winner = tttGames[ctx.author.id].user
+                        loser = tttGames[ctx.author.id].opponent
+                        winnerName = await client.fetch_user(int(winner))
+                        loserName = await client.fetch_user(int(loser))
+                        print(winnerName)
+                        print(loserName)
+                        lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
+                else:
+                    await ctx.send(f"{ctx.author.mention}, it's not your turn!")
+
+            elif ctx.author.id == tttGames[ctx.author.id].opponent:
+                if tttGames[ctx.author.id].userTurn == False:
+                    await ctx.send(tttGames[ctx.author.id].makeMove(move))
+                    if tttGames[ctx.author.id].checkWin == True:
+                        winner = tttGames[ctx.author.id].opponent
+                        loser = tttGames[ctx.author.id].user
+                        winnerName = await client.fetch_user(int(winner))
+                        loserName = await client.fetch_user(int(loser))
+                        print(winnerName)
+                        print(loserName)
+                        lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
+                else:
+                    await ctx.send(f"{ctx.author.mention}, it's not your turn!")
+
+            if tttGames[ctx.author.id].checkWin == True or tttGames[ctx.author.id].checkTie == True:
+                await ctx.send(embed=goodbyeMessage())
+                userId = tttGames[ctx.author.id].user
+                opId = tttGames[ctx.author.id].opponent
+                del tttGames[userId]
+                del tttGames[opId]
+                print(tttGames)
+        else:
+            error2 = discord.Embed(
+                title="Start a Tic Tac Toe game ($ttt @user) to make a move!")
+            await ctx.send(embed=error2)
     return
+
+@ttt.error
+async def ttt_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Use $ttt @user to start a game or $ttt [col][row] to make a move!")
 
 
 # Command to Play the MicroChess Minigame
@@ -232,95 +274,263 @@ async def ch(ctx, user: typing.Union[discord.User, str]):
 
     return
 
+@ch.error
+async def ch_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Use $ch @user to start a game or $ch [piece][col][row] to make a move!")
+
 
 # Command to Play the Battleship Game
 @client.command()
-async def battleship(ctx, message=None):
+async def bts(ctx, message=None):
+
+    lb = leaderb()
 
     # Instantiate the Game unless a Game is already being Played
     if not message:
-        global battleshipGame
-        battleshipGame = BattleShipGame()
-        await ctx.send("Battleship game started!")
+        if not btsGames.get(ctx.author.id):
+            btsGames[ctx.author.id] = BattleShipGame(ctx.author.id)
+            print(btsGames)
+        else:
+            error1 = discord.Embed(
+                title="You are already in a game!")
+            await ctx.channel.send(embed=error1)
+            return
+
+        start = discord.Embed(title="Battleship Game Started!",
+                              description="Enter $bts \'Location\' To Make A Move\nExample: $bts a1", color=15158332)
+        await ctx.send(embed=start)
+        await ctx.channel.send(btsGames[ctx.author.id].initBoard())
 
     # Make the Move Given
-    move = ctx.message.content[12:]
+    else:
+        move = message
+        # For Testing Purposes
+        print(move)
 
-    # For Testing Purposes
-    print(move)
+        if(move == 'help'):
+            help = discord.Embed(
+                title="Battleship Commands!",
+                description="Use command '$bts' to start the game\nThe game is played on a 5x5 board, use A-E and 1-5 to select a row and column\nUse command '$bts [row][col]' to make a move, for example '$bts a1'\nUse command '$bts end' to end the game")
+            await ctx.send(embed=help)
+            return
 
-    await ctx.send(battleshipGame.makeMove(move))
+        if btsGames.get(ctx.author.id):
 
+            if(move == 'end'):
+                btsGames[ctx.author.id].endGame = True
+            else:
+                await ctx.send(btsGames[ctx.author.id].makeMove(move))
+#                if btsGames[ctx.author.id].checkWin == True:
+
+            if btsGames[ctx.author.id].checkWin == True or btsGames[ctx.author.id].endGame == True:
+                await ctx.send(embed=goodbyeMessage())
+                userId = btsGames[ctx.author.id].user
+                del btsGames[userId]
+                print(btsGames)
+        else:
+            error2 = discord.Embed(
+                title="Start a Battleship game ($bts) to make a move!")
+            await ctx.send(embed=error2)
     return
+
+@client.command()
+async def c4(ctx, user: typing.Union[discord.User, str]):
+    
+    lb = leaderb()
+    
+    if not isinstance(user, str):
+        # Check if the user or opponent is already in a game
+        if not c4Games.get(ctx.author.id) and not c4Games.get(user.id):
+            c4Games[ctx.author.id] = Connect4Game(ctx.author.id, user.id)
+            c4Games[user.id] = c4Games[ctx.author.id]
+            print(c4Games)
+        else:
+            error1 = discord.Embed(title="You or the player you invited are already in a game!")
+            await ctx.channel.send(embed = error1)
+            return
+
+        start = discord.Embed(title="Connect 4 Game Started!",
+                              description="Enter $c4 \'Location\' To Make A Move\nExample: $c4 a", color=15158332)
+        await ctx.send(embed=start)
+        await ctx.channel.send(c4Games[ctx.author.id].initBoard())
+        await ctx.send(f"{ctx.author.mention}, Make your move!")
+    else:
+        move = user
+        if(move == 'help'):
+            help = discord.Embed(
+                title="Connect 4 Commands!",
+                description="Use command '$c4 @user' to start the game\nThe game is played on a 6X7 board, use A-G to select a column\nUse command '$c4 [col]' to make a move, for example '$c4 a'")
+            await ctx.send(embed=help)
+            return
+        if c4Games.get(ctx.author.id):
+            if ctx.author.id == c4Games[ctx.author.id].user:
+                if c4Games[ctx.author.id].userTurn == True:
+                    await ctx.send(c4Games[ctx.author.id].makeMove(move))
+                    if c4Games[ctx.author.id].checkWin == True:
+                        winner = c4Games[ctx.author.id].user
+                        loser = c4Games[ctx.author.id].opponent
+                        winnerName = await client.fetch_user(int(winner))
+                        loserName = await client.fetch_user(int(loser))
+                        lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
+                else:
+                    await ctx.send(f"{ctx.author.mention}, it's not your turn!")
+
+            elif ctx.author.id == c4Games[ctx.author.id].opponent:
+                if c4Games[ctx.author.id].userTurn == False:
+                    await ctx.send(c4Games[ctx.author.id].makeMove(move))
+                    if c4Games[ctx.author.id].checkWin == True:
+                        winner = c4Games[ctx.author.id].opponent
+                        loser = c4Games[ctx.author.id].user
+                        winnerName = await client.fetch_user(int(winner))
+                        loserName = await client.fetch_user(int(loser))
+                        lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
+                else:
+                    await ctx.send(f"{ctx.author.mention}, it's not your turn!")
+
+            if c4Games[ctx.author.id].checkWin == True or c4Games[ctx.author.id].checkTie == True:
+                await ctx.send(embed=goodbyeMessage())
+                userId = c4Games[ctx.author.id].user
+                opId = c4Games[ctx.author.id].opponent
+                del c4Games[userId]
+                del c4Games[opId]
+                print(c4Games)
+        else:
+            error2 = discord.Embed(title = "Start a Connect 4 game to make a move!")
+            await ctx.send(embed = error2)
+    return
+
+@c4.error
+async def c4_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("Use $c4 @user to start a game or $c4 [col] to make a move!")
+
 
 # Command to Play the BlackJack Game
 @client.command()
-async def blackjack(ctx, message=None):
+async def bj(ctx, message=None):
+
+    lb = leaderb()
 
     # Instantiate the Game unless a Game is already being Played
     if not message:
-        global blackjackGame
-        blackjackGame = blackJack()
+        if not bjGames.get(ctx.author.id):
+            bjGames[ctx.author.id] = blackJack()
+            print(bjGames)
+        else:
+            error1 = discord.Embed(
+                title="You are already in a game!")
+            await ctx.channel.send(embed=error1)
+            return
+
+        # global blackjackGame
+        # blackjackGame = blackJack()
         await ctx.send("BlackJack game started!")
-        blackjackGame.start()
+        bjGames[ctx.author.id].start()
         embed = discord.Embed(title="BlackJack", color=0xe60a0a)
         embed.set_thumbnail(
             url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
-        embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
-        embed.add_field(name="Player", value=blackjackGame.player, inline=False)
-        embed.set_footer(text="Enter $blackjack H to Hit or $blackjack S to Stand")
+        embed.add_field(
+            name="Dealer", value=bjGames[ctx.author.id].dealer, inline=False)
+        embed.add_field(
+            name="Player", value=bjGames[ctx.author.id].player, inline=False)
+        embed.set_footer(text="Enter $bj H to Hit or $bj S to Stand")
         await ctx.send(embed=embed)
+        return
 
     # Make the Move Given
-    if (ctx.message.content[11] == 'H' and blackjackGame.player != []):
+    move = message.upper()
+    if move == 'HELP':
+            help = discord.Embed(
+                title="Black Jack Commands!",
+                description="Use command '$bj' to start the game\nUse command '$bj h' to get another card or '$bj s' to keep your cards'")
+            await ctx.send(embed=help)
+            return
+
+    if (move == 'H' and bjGames[ctx.author.id].player != []):
         embed = discord.Embed(title="BlackJack", color=0xe60a0a)
-        blackjackGame.choice(ctx.message.content[11])
-        if (blackjackGame.done == 1):
-            result = blackjackGame.result()
+        bjGames[ctx.author.id].choice(move)
+        if (bjGames[ctx.author.id].done == 1):
+            result = bjGames[ctx.author.id].result()
             embed.set_thumbnail(
                 url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
-            embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
-            embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+            embed.add_field(
+                name="Dealer", value=bjGames[ctx.author.id].dealer, inline=False)
+            embed.add_field(
+                name="Player", value=bjGames[ctx.author.id].player, inline=False)
             if (result == 1):
                 embed.set_footer(text="PLAYER WIN")
+                winner = ctx.author.id
+                winnerName = ctx.author
+                loser = 0
+                loserName = "Computer"
             elif (result == 2):
                 embed.set_footer(text="DRAW")
             else:
                 embed.set_footer(text="PLAYER LOSE")
+                winner = 0
+                winnerName = "Computer"
+                loser = ctx.author.id
+                loserName = ctx.author
             await ctx.send(embed=embed)
-            blackjackGame.clean()
+            if result != 2:
+                lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
+            bjGames[ctx.author.id].clean()
+            await ctx.send(embed = goodbyeMessage())
+            del bjGames[ctx.author.id]
+            print(bjGames)
+
         else:
-            embed.set_footer(text="Enter $blackjack H to Hit or $blackjack S to Stand")
+            embed.set_footer(text="Enter $bj H to Hit or $bj S to Stand")
             embed.set_thumbnail(url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
-            embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
-            embed.add_field(name="Player", value=blackjackGame.player, inline=False)
+            embed.add_field(
+                name="Dealer", value=bjGames[ctx.author.id].dealer, inline=False)
+            embed.add_field(
+                name="Player", value=bjGames[ctx.author.id].player, inline=False)
             await ctx.send(embed=embed)
-    elif (ctx.message.content[11] == 'S' and blackjackGame.player != []):
-        blackjackGame.choice(ctx.message.content[11])
-        blackjackGame.dealerTurn()
+
+    elif (move == 'S' and bjGames[ctx.author.id].player != []):
+        bjGames[ctx.author.id].choice(move)
+        bjGames[ctx.author.id].dealerTurn()
         embed = discord.Embed(title="BlackJack", color=0xe60a0a)
         embed.set_thumbnail(
             url="https://previews.123rf.com/images/irrrina/irrrina1611/irrrina161100011/66665304-playing-cards-icon-outline-illustration-of-playing-cards-vector-icon-for-web.jpg")
-        embed.add_field(name="Dealer", value=blackjackGame.dealer, inline=False)
-        embed.add_field(name="Player", value=blackjackGame.player, inline=False)
-        result = blackjackGame.result()
+        embed.add_field(name="Dealer", value=bjGames[ctx.author.id].dealer, inline=False)
+        embed.add_field(
+            name="Player", value=bjGames[ctx.author.id].player, inline=False)
+        result = bjGames[ctx.author.id].result()
 
         if (result == 1):
             embed.set_footer(text="PLAYER WIN")
+            winner = ctx.author.id
+            winnerName = ctx.author
+            loser = 0
+            loserName = "Computer"
         elif (result == 2):
             embed.set_footer(text="DRAW")
         else:
             embed.set_footer(text="PLAYER LOSE")
+            winner = 0
+            winnerName = "Computer"
+            loser = ctx.author.id
+            loserName = ctx.author
         await ctx.send(embed=embed)
-        blackjackGame.clean()
+        if result != 2:
+            lb.updateLeaderboard(winner, loser, str(winnerName), str(loserName))
+        bjGames[ctx.author.id].clean()
+        await ctx.send(embed=goodbyeMessage())
+        del bjGames[ctx.author.id]
+        print(bjGames)
+
     else:
         await ctx.send("Wrong Input")
 
     return
 
-# Error Handler if Invited User Doesn't exist for Tic-Tac-Toe ################################################################
+# Error Handlers Here ######################################################
 
-
+# Old Command to Create a New User in Leaderboard; now is Automated
+'''
 # Command to Create User ID in Leaderboard
 @client.command()
 async def newUser(ctx):
@@ -329,31 +539,92 @@ async def newUser(ctx):
 
     # Obtain the User's ID
     userID = ctx.author.id
+    userName = ctx.author
     print(userID)
+    print(userName)
 
     # Send the User ID to Function
-    lb.addNewUser(userID)
+    lb.addNewUser(userID, userName)
 
-    # Open the JSON to be Loaded
-#    with open("leaderboard2.json") as lb_file:
-#        lb_data = json.load(lb_file)
-#        print(lb_data)
+    return
+'''
 
-#        temp = lb_data['users']
+# Command to Display the Leaderboard
+@client.command()
+async def leaderboard(ctx):
 
-        # Create User to Append to JSON File
-#        nUser = {"user_name": f"{userID}",
-#                 "wins": "0",
-#                 "losses": "0"
-#                }
+    # Instantiate the Leaderboard Class
+    lb = leaderb()
 
-#        temp.append(nUser)
+    # Create an Embedded Variable for Formatting
+    embedVar = discord.Embed(title = "__**Leaderboard**__", timestamp = ctx.message.created_at)
 
-    # Append to JSON File
-#    with open("leaderboard2.json", 'w') as file:
-#        json.dump(temp, file, indent = 4)
+    # Take the Leaderboard Data in as a Variable
+    data = lb.displayLeaderboard()
+
+    # Add the Leaderboard Data as a Field in the Embed
+    embedVar.add_field(name = "Most Wins", value = f'```{data}```', inline = False)
+
+    await ctx.send(embed = embedVar)
+
+    return
+
+# Old Test Command to Update the Leaderboard with wins and losses; now handled Automatically once game is finished
+'''
+# Test Command to Update the Leaderboard
+@client.command()
+async def updateLB(ctx):
+
+    # Instantiate the Leaderboard Class
+    lb = leaderb()
+
+#    lb.addNewUser(144, "Test1")
+#    lb.addNewUser(164, "Test2")
+    lb.updateLeaderboard(144, 164, "Test1", "Test2")
+
+    return
+'''
+
+
+# Command to Test the New Leaderboard
+@client.command()
+async def newLB(ctx):
+
+    nLB = sqliteLeaderboard()
+
+    # Create the Connection to the Leaderboard Database
+    global conn
+    conn = nLB.create_connection()
+    print("Connected to Database...")
+
+    # Create the Table to the Leaderboard
+    nLB.create_table(conn)
+    print("Database Table Created...")
+
+    # Insert a User into the Leaderboard
+    nLB.insert_user(conn, ctx.author.id, str(ctx.author))
+    nLB.insert_user(conn, 144, "Test1")
+    print("Users Inserted into Database...")
+
+    # Display the Leaderboard after Inserting Users
+#    await ctx.send(nLB.display_leaderboard(conn))
+    nLB.display_leaderboard(conn)
+    print("Leaderboard Displayed...")
+
+    # Update the Leaderboard for Winner and Loser
+    nLB.update_leaderboard(conn, ctx.author.id, 144, ctx.author, "Test1")
+    print("Database Updated...")
+
+    # Display the Leaderboard after Update
+#    await ctx.send(nLB.display_leaderboard(conn))
+    nLB.display_leaderboard(conn)
+    print("Leaderboard Displayed...")
+
+    # Close the Connection to the Leaderboard Database
+    nLB.close_connection(conn)
+    print("Disconnected to Database...")
 
     return
 
 
-client.run(bot_info['token'])   
+client.run(bot_info['token'])

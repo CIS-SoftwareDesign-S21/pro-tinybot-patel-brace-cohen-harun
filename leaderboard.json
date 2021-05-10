@@ -1,11 +1,13 @@
 {
     "users": [
         {
+            "user_id": "",
             "user_name": "",
             "wins": "",
             "losses": ""
         },
         {
+            "user_id": "",
             "user_name": "",
             "wins": "",
             "losses": ""
