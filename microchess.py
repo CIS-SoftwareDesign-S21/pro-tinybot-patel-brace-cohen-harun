@@ -120,12 +120,12 @@ class MicrochessGame:
             if self.board[toRow][toColumn] != None:
                 self.playerScores[self.turn] += self.board[toRow][toColumn].getCaptured()
                 #if king is victim, end game
-                if self.board[toRow][toColumn].getCaptured() == -1:
-                    output += "%s has won the game!" % self.userAccounts[self.turn].mention
-                    self.board[toRow][toColumn] = self.board[fromRow][fromColumn]
-                    self.board[fromRow][fromColumn] = None
-                    self.gameCompleted = True
-                    return output, True
+                #if self.board[toRow][toColumn].getCaptured() == -1:
+                    #output += "%s has won the game!" % self.userAccounts[self.turn].mention
+                    #self.board[toRow][toColumn] = self.board[fromRow][fromColumn]
+                    #self.board[fromRow][fromColumn] = None
+                    #self.gameCompleted = True
+                    #return output, True
 
                 output += '%s has now captured %d point(s) worth of material.\n' % (self.playerNames[self.turn], self.playerScores[self.turn])
                 # if only Kings left, declare stalemate
@@ -149,7 +149,16 @@ class MicrochessGame:
 
             #if opp. king is in check, add to message
             if self.isInCheck():
+                if self.isInCheckmate():
+                    output += "Checkmate! %s has won the game!" % self.userAccounts[self.turn].mention
+                    self.gameCompleted = True
+                    return output, True
+
                 output += 'King is in Check. '
+            elif self.isInCheckmate(): #not actually checkmate; this is testing for stalemate with > 2 pieces on board
+                output += "Stalemate! Game over."
+                self.gameCompleted = True
+                return output, True
 
             self.changeTurn()
             output += '%s\'s move!' % self.userAccounts[self.turn].mention
@@ -246,8 +255,8 @@ class MicrochessGame:
 
         #if you have nothing left but King, game will let you
         #move him into check so that game does not freeze
-        if self.playerScores[otherPlayer] > 11:
-            return False
+        #if self.playerScores[otherPlayer] > 11:
+            #return False
 
         bCopy = copy.deepcopy(self.board)
         self.board[toRow][toColumn] = self.board[fromRow][fromColumn]
@@ -265,3 +274,31 @@ class MicrochessGame:
 
     def isTurnOf(self, userID):
         return userID == self.userAccounts[self.turn].id
+
+
+    def isInCheckmate(self):
+        if self.turn == 0:
+            defending = 1
+        else:
+            defending = 0
+
+        bCopy = copy.deepcopy(self.board)
+        #for each piece on defending side
+        for r in range(0, 5):
+            for c in range(0, 4):
+                if self.board[r][c] != None and self.board[r][c].color == defending:
+                    #for every spot on board
+                    for x in range(0, 5):
+                        for y in range(0, 4):
+                            #if there exists a legal move that kills check, not in checkmate
+                            if self.board[r][c].canMakeMove( r, c, x, y, bCopy ):
+                                self.board[x][y] = self.board[r][c]
+                                self.board[r][c] = None
+                                if not self.isInCheck():
+                                    self.board = bCopy
+                                    bCopy = copy.deepcopy(self.board)
+                                    return False
+                                self.board = bCopy
+                                bCopy = copy.deepcopy(self.board)
+        #in checkmate if no legal paths out of check
+        return True
