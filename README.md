@@ -40,9 +40,13 @@ The quarantine has made meeting up in person quite hard so this seemed to be the
 **Tic Tac Toe** - A rendition the classic game played in Discord chat.  
 **Micro-chess** - A simplified chess game on 4x5 board. </br>
 **Coin Flip** - A simple game of heads or tails. </br>
-**Battleship** - A strategy type guessing game for two players.
+**Battleship** - A strategy type guessing game for two players.</br>
+**BlackJack** - A card game where a player compete against a dealer for higher value cards, but not exceeding 21. </br>
+**Connect 4** - A connection board game where players compete to connect 4 pieces.</br>
 
 # How to Install
+Invite the TinyBot to the server in Discord or create your own bot and change the token key inside token.json file.
 Download files and run command "python3 botMain.py"  
-Running bot may require installation of Pillow: https://pillow.readthedocs.io/en/stable/installation.html#windows-installation  
+Running bot may require installation of Pillow: https://pillow.readthedocs.io/en/stable/installation.html#windows-installation
+Running boy may also require installation of Pandas: https://pypi.org/project/pandas/#description 
 Mac users may have to run "Install Certificates.command" script inside Python "Applications" directory.
