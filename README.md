@@ -45,8 +45,8 @@ The quarantine has made meeting up in person quite hard so this seemed to be the
 **Connect 4** - A connection board game where players compete to connect 4 pieces.</br>
 
 # How to Install
-Invite the TinyBot to the server in Discord or create your own bot and change the token key inside token.json file.
+Invite the TinyBot to the server in Discord or create your own bot and change the token key inside token.json file.  
 Download files and run command "python3 botMain.py"  
-Running bot may require installation of Pillow: https://pillow.readthedocs.io/en/stable/installation.html#windows-installation
-Running boy may also require installation of Pandas: https://pypi.org/project/pandas/#description 
+Running bot may require installation of Pillow: https://pillow.readthedocs.io/en/stable/installation.html#windows-installation  
+Running boy may also require installation of Pandas: https://pypi.org/project/pandas/#description  
 Mac users may have to run "Install Certificates.command" script inside Python "Applications" directory.
